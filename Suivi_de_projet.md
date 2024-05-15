@@ -14,12 +14,20 @@
 ##### BEIGNON Arthur : VScode + GitLab / Commencement de L'algorithme pour l'application numéro 2 
 ##### LESAGE Mathéo :
 
-## 15/05/24
+## 15/05/24 Matin
 
 ##### COTAR Clément  :
 ##### TELLIEZ LUC : Suite de la création de la vue de la première application
 ##### BEIGNON Arthur : VScode + GitHUB / Avancement de l'algorithme pour l'application numéro 2 (Djiska, fonctions ...)
 ##### LESAGE Mathéo :
+
+## 15/05/24 Après-midi
+
+##### COTAR Clément  :
+##### TELLIEZ LUC : Suite de la création de la vue de la première application
+##### BEIGNON Arthur : Algorithme pour l'application numéro deux pour le parcours (ajout de la fonction pour demander au client le fichier, ouverture du fichier json, si problème message erreur)
+##### LESAGE Mathéo :
+
 
 ## 16/05/24
 
