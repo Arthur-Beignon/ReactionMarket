@@ -8,7 +8,11 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Application_A")
-        self.setGeometry(0, 0, 1920, 1080)
+        
+        # Obtenir la taille de l'écran pour afficher l'application en plein écran correctement
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        self.setGeometry(screen_geometry)
         
         # Barre de menu
         menu_bar = self.menuBar()
@@ -32,7 +36,6 @@ class MainWindow(QMainWindow):
         self.dock = QDockWidget('Informations')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMinimumSize(200, 120)
-        self.dock.setMaximumSize(500, 500)
         
         self.central_widget = QLabel('Importer un plan', alignment=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter)
         self.setCentralWidget(self.central_widget)
