@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QPushButton
 from PyQt6.QtGui import QIcon, QAction, QPixmap 
 from PyQt6.QtCore import Qt, QSize
 
@@ -89,8 +89,8 @@ class FenetreAppli(QMainWindow):
         self.largeur= self.taille.width()
         self.hauteur= self.taille.height()
         
-        self.nb_case_largeur = self.largeur / 10
-        
+
+
 
         #self.largeur_parcouru=0
         #self.hauteur_parcouru=0
@@ -111,6 +111,7 @@ class FenetreAppli(QMainWindow):
         #        case_cliquable = "case_cliquable" + str(nb_case)
         #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+20,self.hauteur_parcouru+20]
         #        nb_case = nb_case +1
+        
 
         #print(self.dictionnaire_cases_cliquables)
 
