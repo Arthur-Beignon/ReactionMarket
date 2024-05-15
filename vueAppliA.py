@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QPixmap
+from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -32,11 +32,17 @@ class MainWindow(QMainWindow):
         menu_theme.addAction('Thème clair', self.theme1)
         menu_theme.addAction('Thème sombre', self.theme2)
         
-        # Dock liste des outils
+        # Options du menu aide
+        action_aide = QAction("Documentation", self)
+        action_aide.triggered.connect(self.aide)
+        menu_aide.addAction(action_aide)
+        
+        # Dock informations sur le plan
         self.dock = QDockWidget('Informations')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMinimumSize(200, 120)
         
+        # Zone centrale avec l'image
         self.central_widget = QLabel('Importer un plan', alignment=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter)
         self.setCentralWidget(self.central_widget)
         font = QFont()
@@ -70,10 +76,13 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(qss)
 
     def theme2(self):
-        fichier_style = open(sys.path[0] + "/fichiers_qss/Diffnes.qss", 'r')
+        fichier_style = open(sys.path[0] + "/fichiers_qss/Takezo.qss", 'r')
         with fichier_style :
             qss = fichier_style.read()
             self.setStyleSheet(qss)
+            
+    def aide(self):
+        QDesktopServices.openUrl(QUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
     
     # Afficher une image sur la partie centrale de l'application
     def afficher_image_central_widget(self, chemin):
