@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel
-from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QDesktopServices, QFont
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QPixmap
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         # Dock liste des outils
         self.dock = QDockWidget('Informations')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
-        self.dock.setMinimumSize(100, 100)
+        self.dock.setMinimumSize(200, 120)
         self.dock.setMaximumSize(500, 500)
         
         self.central_widget = QLabel('Importer un plan', alignment=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter)
@@ -44,17 +44,22 @@ class MainWindow(QMainWindow):
     # Mettre à jour la vue
     #def updateVue(self, outil: str) -> None:
     
+    # Seul les fichiers en .png, .jpg, .jpeg et .gif sont autorisés
     def fichier_nouveau(self):
         QMessageBox.information(self, "Nouveau", "Développement en cours . . .")
 
     def fichier_ouvrir(self):
-        QMessageBox.information(self, "Ouvrir", "Développement en cours . . .")
+        ouvrir_image = QFileDialog(self)
+        ouvrir_image.setNameFilter("Images (*.png *.jpg *.jpeg *.gif)")
+        if ouvrir_image.exec():
+            chemin = ouvrir_image.selectedFiles()[0]
+            self.afficher_image_central_widget(chemin)
 
     def fichier_enregistrer(self):
         QMessageBox.information(self, "Enregistrer", "Développement en cours . . .")
         
     def fichier_aide(self):
-        QDesktopServices.openUrl(QUrl("https://chat.openai.com"))
+        QMessageBox.information(self, "Enregistrer", "Développement en cours . . .")
     
     # Changer le thème
     def theme1(self):
@@ -66,6 +71,13 @@ class MainWindow(QMainWindow):
         with fichier_style :
             qss = fichier_style.read()
             self.setStyleSheet(qss)
+    
+    # Afficher une image sur la partie centrale de l'application
+    def afficher_image_central_widget(self, chemin):
+        pixmap = QPixmap(chemin)
+        self.central_widget.setPixmap(pixmap.scaled(self.central_widget.size(), Qt.AspectRatioMode.KeepAspectRatio))
+        self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.central_widget.setText("")
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
