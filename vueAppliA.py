@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
             self.setLayout(layoutPrincipale)
         
         
-# MainS
+# Main
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
