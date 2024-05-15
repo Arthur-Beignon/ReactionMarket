@@ -26,7 +26,7 @@ def demande_produit(nb_produits):
     return liste_produit
 
 
-
+#Permet de trouver le chemin le plus cours depuis un point
 def dijkstra(graphe: dict, depart: str, bk_liste: list = []) -> dict:
     '''La fonction renvoie un dictionnaire dont les clés sont les sommets que l'on peut atteindre
 à partir du sommet_depart.
@@ -61,7 +61,7 @@ A chaque clé est associée la distance qui sépare ce sommet du sommet_depart.
                     
     return distance
 
-
+#Permet de demander le nom de fichier json et vérifie si il est bon
 def demander_nom_fichier():
     while True:
         nom_fichier = input("Quel est le nom du fichier que vous voulez lire ? \n")
@@ -75,26 +75,27 @@ def demander_nom_fichier():
 
 
 
-
+#Permet de lire le fichier json et donne les datas.
 def lire_fichier(nom_fichier) :
     with open(nom_fichier) as f:
         data = json.load(f)
-        print("Légumes : ",data['Légumes'])
-        print("Poissons : ", data['Poissons'])
-        print("Viandes : ", data['Viandes'])
-        print("Épicerie : ", data['Épicerie'])
-        print("Épicerie sucrée : ", data['Épicerie sucrée'])
-        print("Petit déjeuner : ", data['Petit déjeuner'])
-        print("Fruits : ", data['Fruits'])
-        print("Rayon frais : ", data['Rayon frais'])
-        print("Crèmerie : ", data['Crèmerie'])
-        print("Conserves : ", data['Conserves'])
-        print("Apéritifs : ", data['Apéritifs'])
-        print("Boissons : ", data['Boissons'])
-        print("Articles Maison : ", data['Articles Maison'])
-        print("Hygiène : ", data['Hygiène'])
-        print("Bureau : ", data['Bureau'])
-        print("Animaux : ", data['Animaux'])
+        print("Légumes : \n",data['Légumes'],"\n")
+        print("Poissons : \n", data['Poissons'],"\n")
+        print("Viandes : \n", data['Viandes'],"\n")
+        print("Épicerie : \n", data['Épicerie'],"\n")
+        print("Épicerie sucrée : \n", data['Épicerie sucrée'],"\n")
+        print("Petit déjeuner : \n", data['Petit déjeuner'],"\n")
+        print("Fruits : \n", data['Fruits'],"\n")
+        print("Rayon frais :\n ", data['Rayon frais'],"\n")
+        print("Crèmerie : \n", data['Crèmerie'],"\n")
+        print("Conserves : \n", data['Conserves'],"\n")
+        print("Apéritifs : \n", data['Apéritifs'],"\n")
+        print("Boissons : \n", data['Boissons'],"\n")
+        print("Articles Maison :\n ", data['Articles Maison'],"\n")
+        print("Hygiène : \n", data['Hygiène'],"\n")
+        print("Bureau : \n", data['Bureau'],"\n")
+        print("Animaux : \n", data['Animaux'],"\n")
+
 
 
 
