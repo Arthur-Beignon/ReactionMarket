@@ -1,8 +1,6 @@
 # ReactionMarket
-Projet de SAE en IHM et Graphes
+## Le supermarché du futur
 
-Membre du groupe : 
+Projet de SAE IHM et Graphes 
 
-TELLIEZ LUC - COTAR CLEMENT - LESAGE MATHEO - BEIGNON ARTHUR
-
-BUT1 - TPA
+TELLIEZ Luc, LESAGE Mathéo, COTAR Clément & BEIGNON Arthur
