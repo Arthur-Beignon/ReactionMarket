@@ -20,3 +20,11 @@
 ##### TELLIEZ LUC : Suite de la création de la vue de la première application
 ##### BEIGNON Arthur : VScode + GitHUB / Avancement de l'algorithme pour l'application numéro 2 (Djiska, fonctions ...)
 ##### LESAGE Mathéo :
+
+## 16/05/24
+
+##### COTAR Clément  :
+##### TELLIEZ LUC : 
+##### BEIGNON Arthur : 
+##### LESAGE Mathéo :
+
