@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
 
@@ -53,10 +53,12 @@ class MainWindow(QMainWindow):
     # Mettre à jour la vue
     #def updateVue(self, outil: str) -> None:
     
-    # Seul les fichiers en .png, .jpg, .jpeg et .gif sont autorisés
     def fichier_nouveau(self):
-        QMessageBox.information(self, "Nouveau", "Développement en cours . . .")
+        fenetre_dialogue = self.nv_fichier()
+        fenetre_dialogue.exec()
 
+    # -----------------------------TEMPORAIRE, SEUL IMAGE POUR L'INSTANT, FICHIER ENTIER PLUS TARD-----------------------------
+    # Seul les fichiers en .png, .jpg, .jpeg et .gif sont autorisés
     def fichier_ouvrir(self):
         ouvrir_image = QFileDialog(self)
         ouvrir_image.setNameFilter("Images (*.png *.jpg *.jpeg *.gif)")
@@ -91,6 +93,37 @@ class MainWindow(QMainWindow):
         self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.central_widget.setText("")
         
+        
+    # Interface s'affichant lors de la création d'un nouveau fichier
+    class nv_fichier(QDialog):
+        def __init__(self):
+            super().__init__()
+
+            self.setWindowTitle("Nouveau fichier")
+            
+            intituleNomFichier = QLabel("Nom du fichier : ")
+            nomFichier = QLineEdit()
+            layoutNom = QHBoxLayout()
+            layoutNom.addWidget(intituleNomFichier)
+            layoutNom.addWidget(nomFichier)
+
+            intitulePlan = QLabel("Chosiir un plan : ")
+            Plan = QPushButton("test")
+            layoutPlan = QHBoxLayout()
+            layoutPlan.addWidget(intitulePlan)
+            layoutPlan.addWidget(Plan)
+    
+            layoutPrincipale = QVBoxLayout()
+            layoutPrincipale.addLayout(layoutNom)
+            layoutPrincipale.addLayout(layoutPlan)
+            
+            
+            self.setLayout(layoutPrincipale)
+            self.setFixedSize(400, 200)
+        
+        
+        
+# Main
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
