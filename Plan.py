@@ -15,7 +15,7 @@ class Image(QLabel):
         
         self.image = QPixmap(chemin)
         self.setPixmap(self.image)
-        
+
 
 
 
@@ -89,20 +89,30 @@ class FenetreAppli(QMainWindow):
         self.largeur= self.taille.width()
         self.hauteur= self.taille.height()
         
-        self.largeur_parcouru=0
-        self.hauteur_parcouru=0
+        self.nb_case_largeur = self.largeur / 10
+        
 
-        self.dictionnaire_cases_cliquables={}
-        nb_case = 0
-        while self.hauteur_parcouru < self.hauteur :
-            while self.largeur_parcouru < self.largeur :
-                case_cliquable = "case_cliquable" + str(nb_case)
-                self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+10,self.hauteur_parcouru+10]
-                nb_case = nb_case +1
-                self.largeur_parcouru= self.largeur_parcouru +10
-            self.hauteur_parcouru=self.hauteur_parcouru +10
+        #self.largeur_parcouru=0
+        #self.hauteur_parcouru=0
 
-        print(self.dictionnaire_cases_cliquables)
+        #self.dictionnaire_cases_cliquables={}
+        #nb_case = 0
+
+        #while self.hauteur_parcouru < self.hauteur :
+        #    while self.largeur_parcouru < self.largeur :
+        #        case_cliquable = "case_cliquable" + str(nb_case)
+        #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+10,self.hauteur_parcouru+10]
+        #        nb_case = nb_case +1
+        #        self.largeur_parcouru= self.largeur_parcouru +10
+        #    self.hauteur_parcouru=self.hauteur_parcouru +10
+
+        #for self.hauteur_parcouru in range (0,self.hauteur,20):
+        #    for self.largeur_parcouru in range (0,self.largeur,20):
+        #        case_cliquable = "case_cliquable" + str(nb_case)
+        #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+20,self.hauteur_parcouru+20]
+        #        nb_case = nb_case +1
+
+        #print(self.dictionnaire_cases_cliquables)
 
 
 
