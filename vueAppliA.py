@@ -7,7 +7,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Application_A")
+        self.setWindowTitle("Gestionnaire de plan")
         
         # Obtenir la taille de l'écran pour afficher l'application en plein écran correctement
         screen = QApplication.primaryScreen()
@@ -100,6 +100,7 @@ class MainWindow(QMainWindow):
             super().__init__()
 
             self.setWindowTitle("Nouveau fichier")
+            self.setFixedSize(300, 130)
             
             intituleNomFichier = QLabel("Nom du fichier : ")
             nomFichier = QLineEdit()
@@ -107,23 +108,27 @@ class MainWindow(QMainWindow):
             layoutNom.addWidget(intituleNomFichier)
             layoutNom.addWidget(nomFichier)
 
-            intitulePlan = QLabel("Chosiir un plan : ")
-            Plan = QPushButton("test")
+            intitulePlan = QLabel("Chosir un plan : ")
+            Plan = QPushButton("Importer")
             layoutPlan = QHBoxLayout()
             layoutPlan.addWidget(intitulePlan)
             layoutPlan.addWidget(Plan)
     
+            validation = QPushButton("Valider")
+            validation.setFixedSize(70, 30)
+            validationLayout = QHBoxLayout()
+            validationLayout.addStretch(1)
+            validationLayout.addWidget(validation)
+    
             layoutPrincipale = QVBoxLayout()
             layoutPrincipale.addLayout(layoutNom)
             layoutPrincipale.addLayout(layoutPlan)
-            
+            layoutPrincipale.addLayout(validationLayout)
             
             self.setLayout(layoutPrincipale)
-            self.setFixedSize(400, 200)
         
         
-        
-# Main
+# MainS
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
