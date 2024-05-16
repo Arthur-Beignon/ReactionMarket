@@ -2,10 +2,10 @@
 
 ## 07/05/24 
 
-##### COTAR Clément  :
+##### COTAR Clément  : Répartition des tâches durant une réunion / Création du GitLab / VScode + GitLab
 ##### TELLIEZ LUC : Répartition des tâches durant une réunion / Création du GitLab / VScode + GitLab
 ##### BEIGNON Arthur : Répartition des tâches durant une réunion / Création du GitLab / VScode + GitLab
-##### LESAGE Mathéo :
+##### LESAGE Mathéo : Répartition des tâches durant une réunion / Création du GitLab / VScode + GitLab
 
 ## 13/05/24 
 
@@ -31,8 +31,8 @@
 
 ## 16/05/24
 
-##### COTAR Clément  :
-##### TELLIEZ LUC : 
-##### BEIGNON Arthur : 
-##### LESAGE Mathéo :
+##### COTAR Clément  : brainstorming en groupe 
+##### TELLIEZ LUC : brainstorming en groupe 
+##### BEIGNON Arthur : Algorithme pour l'application n°2 (ajout de la fonction pour comparer les aliments entre eux), brainstorming en groupe 
+##### LESAGE Mathéo : brainstorming en groupe 
 
