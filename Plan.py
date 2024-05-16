@@ -88,9 +88,6 @@ class FenetreAppli(QMainWindow):
         self.taille = self.image.size()
         self.largeur= self.taille.width()
         self.hauteur= self.taille.height()
-        
-
-
 
         #self.largeur_parcouru=0
         #self.hauteur_parcouru=0
@@ -111,10 +108,33 @@ class FenetreAppli(QMainWindow):
         #        case_cliquable = "case_cliquable" + str(nb_case)
         #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+20,self.hauteur_parcouru+20]
         #        nb_case = nb_case +1
-        
+
 
         #print(self.dictionnaire_cases_cliquables)
 
+    def mousePressEvent(self, event):
+        if event.buttons() == Qt.MouseButton.LeftButton:
+            click_pos_widget = event.pos()
+            print(click_pos_widget)
+
+
+            image_pos = self.image.pos()
+            print("Haut gauche de l'image", image_pos)
+            
+            widget_pos_haut_gauche = (self.centralWidget().pos().x(),self.centralWidget().pos().y())
+            widget_pos_haut_droite = (self.centralWidget().pos().x(),self.centralWidget().pos().y() +self.largeur)
+            widget_pos_bas_gauche = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y())
+            widget_pos_bas_droite = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y() +self.largeur)
+            print("position haut gauche :" , widget_pos_haut_gauche)
+            print("position haut droite :" , widget_pos_haut_droite)
+            print("position bas gauche :" , widget_pos_bas_gauche)
+            print("position bas droite :" , widget_pos_bas_droite)
+        
+            # Calculate the position of the mouse click relative to the image
+            #click_pos_image = click_pos_widget - widget_pos_main_window
+            #print(click_pos_image)
+            
+            #print("Mouse clicked on the image at:", click_pos_image)
 
 
 
