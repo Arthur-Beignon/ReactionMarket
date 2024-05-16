@@ -1,6 +1,6 @@
 # ReactionMarket
 
-#### Le supermarché du futur
+### Le supermarché du futur
 
 Projet de SAE IHM et Graphes 
 
