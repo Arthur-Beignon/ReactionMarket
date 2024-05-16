@@ -97,6 +97,25 @@ def lire_fichier(nom_fichier) :
         print("Animaux : \n", data['Animaux'],"\n")
 
 
+#Permet de trouver si les produits existe bien dans le fichier json.
+def comparer_produits(liste_produits, nom_fichier):
+    with open(nom_fichier, 'r') as f:
+        donnees_json = json.load(f)
+    
+    correspondances = {}
+
+    for categorie, produits in donnees_json.items():
+        for produit in liste_produits:
+            if produit in produits:
+                correspondances[produit] = categorie
+    
+    return correspondances
+
+
+
+
+
+
 
 
 def main():
@@ -104,6 +123,9 @@ def main():
     nom_fichier = demander_nom_fichier()
     lire_fichier(nom_fichier)
     demande_produit(nb_produits)
+    fichier_json = "liste_produits.json"
+    resultat = comparer_produits(liste_produit, fichier_json)
+    print(resultat)
 
 if __name__ == "__main__":
     main()
