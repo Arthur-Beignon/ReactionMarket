@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
 
@@ -100,19 +100,63 @@ class MainWindow(QMainWindow):
             super().__init__()
 
             self.setWindowTitle("Nouveau fichier")
-            self.setFixedSize(300, 130)
+            self.setFixedSize(300, 300)
             
-            intituleNomFichier = QLabel("Nom du fichier : ")
-            nomFichier = QLineEdit()
-            layoutNom = QHBoxLayout()
-            layoutNom.addWidget(intituleNomFichier)
-            layoutNom.addWidget(nomFichier)
-
-            intitulePlan = QLabel("Chosir un plan : ")
-            Plan = QPushButton("Importer")
-            layoutPlan = QHBoxLayout()
-            layoutPlan.addWidget(intitulePlan)
-            layoutPlan.addWidget(Plan)
+            intituleNomProjet = QLabel("Nom du fichier : ")
+            nomProjet = QLineEdit()
+            intituleAuteur = QLabel("Nom de l'auteur : ")
+            nomAuteur = QLineEdit()
+            intituleNomMagasin = QLabel("Nom du magasin : ")
+            nomMagasin = QLineEdit()
+            intituleAdresseMagasin = QLabel("Adresse du magasin : ")
+            adresseMagasin = QLineEdit()
+            intituleLargeurGrille = QLabel("Largeur de la grille : ")
+            largeurGrille = QSpinBox()
+            largeurGrille.setRange(1, 1000)
+            intituleLongueurGrille = QLabel("Longueur de la grille : ")
+            longueurGrille = QSpinBox()
+            longueurGrille.setRange(1, 1000)
+            intituleProduits = QLabel("Fichier JSON des produits : ")
+            importerProduits = QPushButton('importer')
+            intituleImage = QLabel("Image du plan : ")
+            importerImage = QPushButton('importer')
+            
+            
+            # RECUPERER DATE AUTOMATIQUEMENT
+            
+            layoutNomProjet = QHBoxLayout()
+            layoutNomProjet.addWidget(intituleNomProjet)
+            layoutNomProjet.addWidget(nomProjet)
+            
+            layoutAuteur = QHBoxLayout()
+            layoutAuteur.addWidget(intituleAuteur)
+            layoutAuteur.addWidget(nomAuteur)
+            
+            layoutNomMagasin = QHBoxLayout()
+            layoutNomMagasin.addWidget(intituleNomMagasin)
+            layoutNomMagasin.addWidget(nomMagasin)
+            
+            layoutAddMagasin = QHBoxLayout()
+            layoutAddMagasin.addWidget(intituleAdresseMagasin)
+            layoutAddMagasin.addWidget(adresseMagasin)
+            
+            layoutLargeurGrille = QHBoxLayout()
+            layoutLargeurGrille.addWidget(intituleLargeurGrille)
+            layoutLargeurGrille.addWidget(largeurGrille)
+            
+            layoutLongueurGrille = QHBoxLayout()
+            layoutLongueurGrille.addWidget(intituleLongueurGrille)
+            layoutLongueurGrille.addWidget(longueurGrille)
+            
+            layoutProduit = QHBoxLayout()
+            layoutProduit.addWidget(intituleProduits)
+            layoutProduit.addStretch(1)
+            layoutProduit.addWidget(importerProduits)
+            
+            layoutImage = QHBoxLayout()
+            layoutImage.addWidget(intituleImage)
+            layoutImage.addStretch(1)
+            layoutImage.addWidget(importerImage)
     
             validation = QPushButton("Valider")
             validation.setFixedSize(70, 30)
@@ -121,8 +165,14 @@ class MainWindow(QMainWindow):
             validationLayout.addWidget(validation)
     
             layoutPrincipale = QVBoxLayout()
-            layoutPrincipale.addLayout(layoutNom)
-            layoutPrincipale.addLayout(layoutPlan)
+            layoutPrincipale.addLayout(layoutNomProjet)
+            layoutPrincipale.addLayout(layoutAuteur)
+            layoutPrincipale.addLayout(layoutNomMagasin)
+            layoutPrincipale.addLayout(layoutAddMagasin)
+            layoutPrincipale.addLayout(layoutLongueurGrille)
+            layoutPrincipale.addLayout(layoutLargeurGrille)
+            layoutPrincipale.addLayout(layoutProduit)
+            layoutPrincipale.addLayout(layoutImage)
             layoutPrincipale.addLayout(validationLayout)
             
             self.setLayout(layoutPrincipale)

@@ -3,7 +3,7 @@ import json
 class modelPlan:
     
     # Constructeur de la classe
-    def __init__(self, nom_projet, auteur, date_creation, nom_magasin, adresse_magasin, fichier_produits, largeur_grille, longueur_grille):
+    def __init__(self, nom_projet, auteur, date_creation, nom_magasin, adresse_magasin, fichier_produits, largeur_grille, longueur_grille, chemin_image):
         self.nom_projet = nom_projet
         self.auteur = auteur
         self.date_creation = date_creation
@@ -13,6 +13,7 @@ class modelPlan:
         self.produit_coos = {}
         self.largeur_grille = largeur_grille
         self.longueur_grille = longueur_grille
+        self.chemin_image = chemin_image
         self.lire_fichier(fichier_produits)
 
     # Lire le fichier json
@@ -51,7 +52,8 @@ class modelPlan:
             "grille": {
                 "largeur": self.largeur_grille,
                 "longueur": self.longueur_grille
-            }
+            },
+            "chemin_image" : self.chemin_image
         }
         with open(fichier_sortie, 'w') as file:
             json.dump(infos, file, indent=4)
