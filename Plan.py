@@ -18,7 +18,6 @@ class Image(QLabel):
 
 
 
-
 # -----------------------------------------------------------------------------
 # --- class FenetreAppli
 # -----------------------------------------------------------------------------
@@ -112,24 +111,30 @@ class FenetreAppli(QMainWindow):
 
         #print(self.dictionnaire_cases_cliquables)
 
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            click_pos_widget = event.pos()
-            print(click_pos_widget)
-
-
-            image_pos = self.image.pos()
-            print("Haut gauche de l'image", image_pos)
-            
-            widget_pos_haut_gauche = (self.centralWidget().pos().x(),self.centralWidget().pos().y())
-            widget_pos_haut_droite = (self.centralWidget().pos().x(),self.centralWidget().pos().y() +self.largeur)
-            widget_pos_bas_gauche = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y())
-            widget_pos_bas_droite = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y() +self.largeur)
-            print("position haut gauche :" , widget_pos_haut_gauche)
-            print("position haut droite :" , widget_pos_haut_droite)
-            print("position bas gauche :" , widget_pos_bas_gauche)
-            print("position bas droite :" , widget_pos_bas_droite)
-        
+    #def mousePressEvent(self, event):
+    #    if event.buttons() == Qt.MouseButton.LeftButton:
+    #        click_pos_widget = event.pos()
+    #        print(click_pos_widget)
+#
+#
+    #        image_pos = self.image.pos()
+    #        print("Haut gauche de l'image", image_pos)
+    #        
+    #        widget_pos_haut_gauche = (self.centralWidget().pos().x(),self.centralWidget().pos().y())
+    #        widget_pos_haut_droite = (self.centralWidget().pos().x(),self.centralWidget().pos().y() +self.largeur)
+    #        widget_pos_bas_gauche = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y())
+    #        widget_pos_bas_droite = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y() +self.largeur)
+    #        print("position haut gauche :" , widget_pos_haut_gauche)
+    #        print("position haut droite :" , widget_pos_haut_droite)
+    #        print("position bas gauche :" , widget_pos_bas_gauche)
+    #        print("position bas droite :" , widget_pos_bas_droite)
+    #        self.hauteurfenetre = self.height()
+    #        self.largeurfenetre = self.width()
+#
+    #        print(self.hauteurfenetre)
+    #        print(self.largeurfenetre)
+#
+#
             # Calculate the position of the mouse click relative to the image
             #click_pos_image = click_pos_widget - widget_pos_main_window
             #print(click_pos_image)
