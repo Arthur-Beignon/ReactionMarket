@@ -1,5 +1,5 @@
 import json
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QCheckBox, QGroupBox, QScrollArea, QHBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QCheckBox, QGroupBox, QScrollArea, QHBoxLayout, QPushButton
 from PyQt6.QtCore import Qt
 
 class SelecteurProduit(QWidget):
@@ -38,10 +38,15 @@ class SelecteurProduit(QWidget):
         self.liste_produits_selectionnes = QListWidget()
         layout_produits_selectionnes.addWidget(self.liste_produits_selectionnes)
 
+        # Bouton Envoyer
+        bouton_envoyer = QPushButton("Envoyer")
+        bouton_envoyer.clicked.connect(self.envoyer_selections)
+
         # Ajouter les layouts au layout principal
         mise_en_page_principale.addLayout(layout_categories)
         mise_en_page_principale.addLayout(layout_produits)
         mise_en_page_principale.addLayout(layout_produits_selectionnes)
+        mise_en_page_principale.addWidget(bouton_envoyer)
 
         self.setLayout(mise_en_page_principale)
         
@@ -105,6 +110,10 @@ class SelecteurProduit(QWidget):
         with open(nom_fichier, 'r') as fichier:
             data = json.load(fichier)
             return data.get("produits", {})
+
+    def envoyer_selections(self):
+        # Implémentez ici la logique pour envoyer les sélections
+        print("Sélections envoyées !")
 
 if __name__ == "__main__":
     app = QApplication([])
