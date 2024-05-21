@@ -34,5 +34,12 @@
 ##### COTAR Clément  : brainstorming en groupe 
 ##### TELLIEZ LUC : brainstorming en groupe + développement du modele.py pour l'application
 ##### BEIGNON Arthur : Algorithme pour l'application n°2 (ajout de la fonction pour comparer les aliments entre eux), brainstorming en groupe 
-##### LESAGE Mathéo : brainstorming en groupe 
+##### LESAGE Mathéo : brainstorming en groupe
+
+## 21/05/24
+
+##### COTAR Clément  : 
+##### TELLIEZ LUC : modification du modèle de l'application A, suite de la création de l'interface pour créer un nouveau fichier
+##### BEIGNON Arthur :  
+##### LESAGE Mathéo :  
 
