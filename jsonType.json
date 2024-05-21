@@ -1,0 +1,30 @@
+{
+    "nom_projet": "Plan du magasin",
+    "auteur": "Auteur",
+    "date_creation": "2024-05-21",
+    "nom_magasin": "Mon Magasin",
+    "adresse_magasin": "123 Rue Exemple",
+    "produits": {
+        "Catégorie1": [
+            "ProduitA",
+            "ProduitB"
+        ],
+        "Catégorie2": [
+            "ProduitC"
+        ]
+    },
+    "produit_coos": {
+        "Catégorie1": {
+            "ProduitA": [1, 2],
+            "ProduitB": [3, 4]
+        },
+        "Catégorie2": {
+            "ProduitC": [5, 6]
+        }
+    },
+    "grille": {
+        "largeur": 10,
+        "longueur": 15
+    },
+    "chemin_image": "path/to/image.jpg"
+}
