@@ -9,24 +9,24 @@
 
 ## 13/05/24 
 
-##### COTAR Clément  :
+##### COTAR Clément  : Creation d'une bibliothèque avec les produit repertorié.
 ##### TELLIEZ LUC : Commencemment de la vue de la première application
 ##### BEIGNON Arthur : VScode + GitLab / Commencement de L'algorithme pour l'application numéro 2 
-##### LESAGE Mathéo :
+##### LESAGE Mathéo : Création d'un grillage sur les map de chaque magasins
 
 ## 15/05/24 Matin
 
-##### COTAR Clément  :
+##### COTAR Clément  : Creation d'une bibliothèque avec les produit repertorié.
 ##### TELLIEZ LUC : Suite de la création de la vue de la première application
 ##### BEIGNON Arthur : VScode + GitHUB / Avancement de l'algorithme pour l'application numéro 2 (Djiska, fonctions ...)
-##### LESAGE Mathéo :
+##### LESAGE Mathéo : Création d'un grillage sur les map de chaque magasins
 
 ## 15/05/24 Après-midi
 
-##### COTAR Clément  :
+##### COTAR Clément  : tentative de modification de la bibliothèque vers un fichiers Json
 ##### TELLIEZ LUC : Suite de la création de la vue de la première application
 ##### BEIGNON Arthur : Algorithme pour l'application numéro deux pour le parcours (ajout de la fonction pour demander au client le fichier, ouverture du fichier json, si problème message erreur)
-##### LESAGE Mathéo :
+##### LESAGE Mathéo : Création d'un grillage sur les map de chaque magasins
 
 
 ## 16/05/24
@@ -38,8 +38,8 @@
 
 ## 21/05/24
 
-##### COTAR Clément  : 
+##### COTAR Clément  : Association de l'appli A avec le Widget de selecteur de produit
 ##### TELLIEZ LUC : modification du modèle de l'application A, suite de la création de l'interface pour créer un nouveau fichier
-##### BEIGNON Arthur :  
-##### LESAGE Mathéo :  
+##### BEIGNON Arthur : Widget de selecteur de produit(par recupération de coordonée)
+##### LESAGE Mathéo : Création d'un grillage sur les map de chaque magasins 
 
