@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QPushButton
-from PyQt6.QtGui import QIcon, QAction, QPixmap 
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QSpinBox
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen
 from PyQt6.QtCore import Qt, QSize
 
 
@@ -9,19 +9,42 @@ class Image(QLabel):
 
     def __init__(self, chemin: str):
         '''Constructeur de la classe'''
-
-        # appel au constructeur de la classe mère
         super().__init__() 
         
         self.image = QPixmap(chemin)
         self.setPixmap(self.image)
+        self.largeur_case = 50
+        self.hauteur_case = 50
 
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            click_pos_image = event.pos()
-            print(f"Clique sur l'image à : {click_pos_image}")
+    def dessiner_quadrillage(self):
+        if self.image.isNull():
+            return
+        
+        # Crée un nouveau QPixmap basé sur l'image originale
+        pixmap_with_grid = QPixmap(self.image)
+        painter = QPainter(pixmap_with_grid)
+        painter.setPen(QPen(Qt.GlobalColor.black))
 
+        # Dessine les lignes verticales
+        for x in range(0, pixmap_with_grid.width(), self.largeur_case):
+            painter.drawLine(x, 0, x, pixmap_with_grid.height())
 
+        # Dessine les lignes horizontales
+        for y in range(0, pixmap_with_grid.height(), self.hauteur_case):
+            painter.drawLine(0, y, pixmap_with_grid.width(), y)
+
+        painter.end()
+        
+        # Met à jour l'image avec le quadrillage
+        self.setPixmap(pixmap_with_grid)
+
+    def set_largeur_case(self, largeur):
+        self.largeur_case = largeur
+        self.dessiner_quadrillage()
+
+    def set_hauteur_case(self, hauteur):
+        self.hauteur_case = hauteur
+        self.dessiner_quadrillage()
 
 
 # -----------------------------------------------------------------------------
@@ -31,11 +54,10 @@ class FenetreAppli(QMainWindow):
     def __init__(self, chemin: str = None):
         super().__init__()
         self.__chemin = chemin
-        self.taille =QSize()
         
         self.setWindowTitle("Votre première application à l'IUT")
         self.setWindowIcon(QIcon(sys.path[0] + '/icones/logo_but.png'))
-        self.setGeometry(100, 100, 500, 300)
+        self.setGeometry(100, 100, 800, 600)
         
         # barre d'état
         self.barre_etat = QStatusBar()
@@ -55,98 +77,43 @@ class FenetreAppli(QMainWindow):
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.destroy)
 
+        # Ajoute les contrôles pour ajuster la taille des cellules du quadrillage
+        self.control_widget = QWidget()
+        self.setCentralWidget(self.control_widget)
+        self.layout = QVBoxLayout()
+        self.control_widget.setLayout(self.layout)
 
+        self.image = None
 
         self.showMaximized()
-
 
     def nouveau(self):
         self.barre_etat.showMessage('Créer un nouveau ....', 2000)
         boite = QFileDialog()
-        chemin, validation = boite.getOpenFileName(directory = sys.path[0])
+        chemin, validation = boite.getOpenFileName(directory=sys.path[0])
         if validation:
             self.__chemin = chemin
-
 
     def ouvrir(self):
         self.barre_etat.showMessage('Ouvrir un nouveau....', 2000)
         boite = QFileDialog()
-        chemin, validation = boite.getOpenFileName(directory = sys.path[0])
+        chemin, validation = boite.getOpenFileName(directory=sys.path[0])
         if validation:
             self.__chemin = chemin
             self.affiche_image()
         
-
-
     def enregistrer(self):
-        self.barre_etat.showMessage('Enregistrer....', 2000 )
+        self.barre_etat.showMessage('Enregistrer....', 2000)
         boite = QFileDialog()
-        chemin, validation = boite.getSaveFileName(directory = sys.path[0])
+        chemin, validation = boite.getSaveFileName(directory=sys.path[0])
         if validation:
             self.__chemin = chemin
-
         
     def affiche_image(self):
         self.image = Image(self.__chemin)
         self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setCentralWidget(self.image)
-        self.taille = self.image.size()
-        self.largeur= self.taille.width()
-        self.hauteur= self.taille.height()
-
-        #self.largeur_parcouru=0
-        #self.hauteur_parcouru=0
-
-        #self.dictionnaire_cases_cliquables={}
-        #nb_case = 0
-
-        #while self.hauteur_parcouru < self.hauteur :
-        #    while self.largeur_parcouru < self.largeur :
-        #        case_cliquable = "case_cliquable" + str(nb_case)
-        #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+10,self.hauteur_parcouru+10]
-        #        nb_case = nb_case +1
-        #        self.largeur_parcouru= self.largeur_parcouru +10
-        #    self.hauteur_parcouru=self.hauteur_parcouru +10
-
-        #for self.hauteur_parcouru in range (0,self.hauteur,20):
-        #    for self.largeur_parcouru in range (0,self.largeur,20):
-        #        case_cliquable = "case_cliquable" + str(nb_case)
-        #        self.dictionnaire_cases_cliquables[case_cliquable] = [self.largeur_parcouru,self.hauteur_parcouru,self.largeur_parcouru+20,self.hauteur_parcouru+20]
-        #        nb_case = nb_case +1
-
-
-        #print(self.dictionnaire_cases_cliquables)
-
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            click_pos_widget = event.pos()
-            print(click_pos_widget)
-
-
-            image_pos = self.image.pos()
-            print("Haut gauche de l'image", image_pos)
-            
-            widget_pos_haut_gauche = (self.centralWidget().pos().x(),self.centralWidget().pos().y())
-            widget_pos_haut_droite = (self.centralWidget().pos().x(),self.centralWidget().pos().y() +self.largeur)
-            widget_pos_bas_gauche = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y())
-            widget_pos_bas_droite = (self.centralWidget().pos().x() +self.hauteur, self.centralWidget().pos().y() +self.largeur)
-            print("position haut gauche :" , widget_pos_haut_gauche)
-            print("position haut droite :" , widget_pos_haut_droite)
-            print("position bas gauche :" , widget_pos_bas_gauche)
-            print("position bas droite :" , widget_pos_bas_droite)
-            self.hauteurfenetre = self.height()
-            self.largeurfenetre = self.width()
-
-            print(self.hauteurfenetre)
-            print(self.largeurfenetre)
-
-
-            # Calculate the position of the mouse click relative to the image
-            #click_pos_image = click_pos_widget - widget_pos_main_window
-            #print(click_pos_image)
-            
-            #print("Mouse clicked on the image at:", click_pos_image)
-
+        self.layout.addWidget(self.image)
+        self.image.dessiner_quadrillage()
 
 
 
