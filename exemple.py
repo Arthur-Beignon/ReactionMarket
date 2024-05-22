@@ -1,5 +1,5 @@
 import json
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QCheckBox, QGroupBox, QScrollArea, QHBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QCheckBox, QGroupBox, QScrollArea, QPushButton
 from PyQt6.QtCore import Qt
 
 class SelecteurProduit(QWidget):
@@ -50,7 +50,9 @@ class SelecteurProduit(QWidget):
 
         self.setLayout(mise_en_page_principale)
         
-        self.produits = self.charger_produits_depuis_fichier("jsonType.json")
+        self.data = self.charger_donnees_depuis_fichier("jsonType.json")
+        self.produits = self.data.get("produits", {})
+        self.produits_coos = self.data.get("produit_coos", {})
 
         self.selections_enregistrees = {categorie: set() for categorie in self.produits.keys()}
 
@@ -64,7 +66,7 @@ class SelecteurProduit(QWidget):
     def sauvegarder_selections(self):
         # Enregistrer les sélections actuelles
         item_courant = self.liste_categories.currentItem()
-        if item_courant:
+        if (item_courant):
             categorie = item_courant.text()
             selections_actuelles = {case.text() for case in self.findChildren(QCheckBox) if case.isChecked()}
             self.selections_enregistrees[categorie] = selections_actuelles
@@ -78,7 +80,7 @@ class SelecteurProduit(QWidget):
         
         # Obtenir la catégorie sélectionnée
         item_courant = self.liste_categories.currentItem()
-        if item_courant:
+        if (item_courant):
             categorie = item_courant.text()
         
             # Ajouter des cases à cocher pour la catégorie sélectionnée
@@ -106,14 +108,25 @@ class SelecteurProduit(QWidget):
         self.liste_categories.addItems(self.produits.keys())
 
     @staticmethod
-    def charger_produits_depuis_fichier(nom_fichier):
+    def charger_donnees_depuis_fichier(nom_fichier):
         with open(nom_fichier, 'r') as fichier:
-            data = json.load(fichier)
-            return data.get("produits", {})
+            return json.load(fichier)
+
+    def get_selections_with_coordinates(self):
+        # Récupérer les coordonnées des produits sélectionnés
+        coordonnees = {}
+        for categorie, selections in self.selections_enregistrees.items():
+            for produit in selections:
+                if categorie in self.produits_coos and produit in self.produits_coos[categorie]:
+                    coordonnees[produit] = self.produits_coos[categorie][produit]
+        return coordonnees
 
     def envoyer_selections(self):
-        # Implémentez ici la logique pour envoyer les sélections
-        print("Sélections envoyées !")
+        # Utiliser la fonction pour obtenir les coordonnées des sélections
+        coordonnees = self.get_selections_with_coordinates()
+
+        # Afficher le dictionnaire des produits sélectionnés avec leurs coordonnées
+        print("Coordonnées des produits sélectionnés:", coordonnees)
 
 if __name__ == "__main__":
     app = QApplication([])
