@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QSpinBox
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen , QMouseEvent
 from PyQt6.QtCore import Qt, QSize
 
 
@@ -45,6 +45,19 @@ class Image(QLabel):
     def set_hauteur_case(self, hauteur):
         self.hauteur_case = hauteur
         self.dessiner_quadrillage()
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.MouseButton.LeftButton:
+            # Position du clic relatif à l'image
+            x = event.position().x()
+            y = event.position().y()
+
+            # Calcul de la case cliquée
+            case_x = int(x // self.largeur_case)
+            case_y = int(y // self.hauteur_case)
+
+            print(f"Clic dans la case: ({case_x}, {case_y})")
+            self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
 
 
 # -----------------------------------------------------------------------------
@@ -98,6 +111,10 @@ class FenetreAppli(QMainWindow):
         self.barre_etat.showMessage('Ouvrir un nouveau....', 2000)
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(directory=sys.path[0])
+        if self.image:
+            self.layout.removeWidget(self.image)
+            self.image.deleteLater()
+            self.image = None
         if validation:
             self.__chemin = chemin
             self.affiche_image()
