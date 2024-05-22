@@ -1,12 +1,12 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, controleur):
         super().__init__()
-
+        self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
         
         # Obtenir la taille de l'écran pour afficher l'application en plein écran correctement
@@ -22,11 +22,11 @@ class MainWindow(QMainWindow):
         menu_aide = menu_bar.addMenu('&Aide')
         
         # Options du menu fichier
-        menu_fichier.addAction('Nouveau', self.fichier_nouveau)
-        menu_fichier.addAction('Ouvrir', self.fichier_ouvrir)
-        menu_fichier.addAction('Enregistrer', self.fichier_enregistrer)
+        menu_fichier.addAction('Nouveau', self.controleur.fichier_nouveau)
+        menu_fichier.addAction('Ouvrir', self.controleur.fichier_ouvrir)
+        menu_fichier.addAction('Enregistrer', self.controleur.fichier_enregistrer)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Quitter', self.destroy)
+        menu_fichier.addAction('Quitter', self.close)
         
         # Options du menu thème
         menu_theme.addAction('Thème clair', self.theme1)
@@ -52,25 +52,6 @@ class MainWindow(QMainWindow):
         
     # Mettre à jour la vue
     #def updateVue(self, outil: str) -> None:
-    
-    def fichier_nouveau(self):
-        fenetre_dialogue = self.nv_fichier()
-        fenetre_dialogue.exec()
-
-    # -----------------------------TEMPORAIRE, SEUL IMAGE POUR L'INSTANT, FICHIER ENTIER PLUS TARD-----------------------------
-    # Seul les fichiers en .png, .jpg, .jpeg et .gif sont autorisés
-    def fichier_ouvrir(self):
-        ouvrir_image = QFileDialog(self)
-        ouvrir_image.setNameFilter("Images (*.png *.jpg *.jpeg *.gif)")
-        if ouvrir_image.exec():
-            chemin = ouvrir_image.selectedFiles()[0]
-            self.afficher_image_central_widget(chemin)
-
-    def fichier_enregistrer(self):
-        QMessageBox.information(self, "Enregistrer", "Développement en cours . . .")
-        
-    def fichier_aide(self):
-        QMessageBox.information(self, "Enregistrer", "Développement en cours . . .")
     
     # Changer le thème
     def theme1(self):
@@ -100,7 +81,7 @@ class MainWindow(QMainWindow):
             super().__init__()
 
             self.setWindowTitle("Nouveau fichier")
-            self.setFixedSize(300, 300)
+            self.setFixedSize(500, 300)
             
             intituleNomProjet = QLabel("Nom du fichier : ")
             nomProjet = QLineEdit()
@@ -124,58 +105,56 @@ class MainWindow(QMainWindow):
             
             # RECUPERER DATE AUTOMATIQUEMENT
             
-            layoutNomProjet = QHBoxLayout()
-            layoutNomProjet.addWidget(intituleNomProjet)
-            layoutNomProjet.addWidget(nomProjet)
+            layoutPrincipal = QGridLayout()
+
+            # Ajout des widgets au layout principal
+            layoutPrincipal.addWidget(intituleNomProjet, 0, 0)
+            layoutPrincipal.addWidget(nomProjet, 0, 1)
             
-            layoutAuteur = QHBoxLayout()
-            layoutAuteur.addWidget(intituleAuteur)
-            layoutAuteur.addWidget(nomAuteur)
+            layoutPrincipal.addWidget(intituleAuteur, 1, 0)
+            layoutPrincipal.addWidget(nomAuteur, 1, 1)
             
-            layoutNomMagasin = QHBoxLayout()
-            layoutNomMagasin.addWidget(intituleNomMagasin)
-            layoutNomMagasin.addWidget(nomMagasin)
+            layoutPrincipal.addWidget(intituleNomMagasin, 2, 0)
+            layoutPrincipal.addWidget(nomMagasin, 2, 1)
             
-            layoutAddMagasin = QHBoxLayout()
-            layoutAddMagasin.addWidget(intituleAdresseMagasin)
-            layoutAddMagasin.addWidget(adresseMagasin)
+            layoutPrincipal.addWidget(intituleAdresseMagasin, 3, 0)
+            layoutPrincipal.addWidget(adresseMagasin, 3, 1)
             
-            layoutLargeurGrille = QHBoxLayout()
-            layoutLargeurGrille.addWidget(intituleLargeurGrille)
-            layoutLargeurGrille.addWidget(largeurGrille)
+            layoutPrincipal.addWidget(intituleLongueurGrille, 4, 0)
+            layoutPrincipal.addWidget(longueurGrille, 4, 1)
             
-            layoutLongueurGrille = QHBoxLayout()
-            layoutLongueurGrille.addWidget(intituleLongueurGrille)
-            layoutLongueurGrille.addWidget(longueurGrille)
+            layoutPrincipal.addWidget(intituleLargeurGrille, 5, 0)
+            layoutPrincipal.addWidget(largeurGrille, 5, 1)
             
-            layoutProduit = QHBoxLayout()
-            layoutProduit.addWidget(intituleProduits)
-            layoutProduit.addStretch(1)
-            layoutProduit.addWidget(importerProduits)
+            layoutPrincipal.addWidget(intituleProduits, 6, 0)
+            layoutPrincipal.addWidget(importerProduits, 6, 1)
             
-            layoutImage = QHBoxLayout()
-            layoutImage.addWidget(intituleImage)
-            layoutImage.addStretch(1)
-            layoutImage.addWidget(importerImage)
-    
+            layoutPrincipal.addWidget(intituleImage, 7, 0)
+            layoutPrincipal.addWidget(importerImage, 7, 1)
+            
             validation = QPushButton("Valider")
             validation.setFixedSize(70, 30)
+            
             validationLayout = QHBoxLayout()
             validationLayout.addStretch(1)
             validationLayout.addWidget(validation)
-    
-            layoutPrincipale = QVBoxLayout()
-            layoutPrincipale.addLayout(layoutNomProjet)
-            layoutPrincipale.addLayout(layoutAuteur)
-            layoutPrincipale.addLayout(layoutNomMagasin)
-            layoutPrincipale.addLayout(layoutAddMagasin)
-            layoutPrincipale.addLayout(layoutLongueurGrille)
-            layoutPrincipale.addLayout(layoutLargeurGrille)
-            layoutPrincipale.addLayout(layoutProduit)
-            layoutPrincipale.addLayout(layoutImage)
-            layoutPrincipale.addLayout(validationLayout)
+
+            layoutComplet = QVBoxLayout()
+            layoutComplet.addLayout(layoutPrincipal)
+            layoutComplet.addStretch(1)
+            layoutComplet.addLayout(validationLayout)
             
-            self.setLayout(layoutPrincipale)
+            self.setLayout(layoutComplet)
+            
+        def ouvrir_fichier_produits(self):
+            fichier, _ = QFileDialog.getOpenFileName(self, "Choisir un JSON avec les produits", "", "JSON Files (*.json);;All Files (*)")
+            if fichier:
+                self.fichier_produits = fichier
+        
+        def ouvrir_fichier_image(self):
+            fichier, _ = QFileDialog.getOpenFileName(self, "Choisir une image de plan", "", "Images Files (*.png *.jpg *.jpeg *.gif);;All Files (*)")
+            if fichier:
+                self.fichier_image = fichier
         
         
 # Main

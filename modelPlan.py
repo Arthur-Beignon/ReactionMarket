@@ -14,7 +14,8 @@ class modelPlan:
         self.largeur_grille = largeur_grille
         self.longueur_grille = longueur_grille
         self.chemin_image = chemin_image
-        self.lire_fichier(fichier_produits)
+        if fichier_produits:
+            self.lire_fichier(fichier_produits)
 
     # Lire le fichier json
     def lire_fichier(self, json_file):
@@ -53,7 +54,7 @@ class modelPlan:
                 "largeur": self.largeur_grille,
                 "longueur": self.longueur_grille
             },
-            "chemin_image" : self.chemin_image
+            "chemin_image": self.chemin_image
         }
         with open(fichier_sortie, 'w') as file:
             json.dump(infos, file, indent=4)
