@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QSpinBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QSpinBox, QPushButton
 from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen , QMouseEvent
 from PyQt6.QtCore import Qt, QSize
 
@@ -59,6 +59,18 @@ class Image(QLabel):
             print(f"Clic dans la case: ({case_x}, {case_y})")
             self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
 
+    def rajouter_produits(self,coord_x:int,coord_y:int):
+        appli=QWidget()
+        label_coord=QLabel("("+ coord_x + "," +coord_y + ")")
+        label_coord
+        layout_bouton=QHBoxLayout()
+        ok=QPushButton("Ok")
+        annuler=QPushButton("Annuler")
+        layout_bouton.addWidget(ok)
+        layout_bouton.addWidget(annuler)
+
+
+
 
 # -----------------------------------------------------------------------------
 # --- class FenetreAppli
@@ -70,7 +82,9 @@ class FenetreAppli(QMainWindow):
         
         self.setWindowTitle("Votre première application à l'IUT")
         self.setWindowIcon(QIcon(sys.path[0] + '/icones/logo_but.png'))
-        self.setGeometry(100, 100, 800, 600)
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        self.setGeometry(screen_geometry)
         
         # barre d'état
         self.barre_etat = QStatusBar()
@@ -98,7 +112,11 @@ class FenetreAppli(QMainWindow):
 
         self.image = None
 
-        self.showMaximized()
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        self.setGeometry(screen_geometry)
+
+        self.show()
 
     def nouveau(self):
         self.barre_etat.showMessage('Créer un nouveau ....', 2000)
