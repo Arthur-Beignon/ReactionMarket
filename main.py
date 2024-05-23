@@ -6,11 +6,9 @@ from controleur import controleur
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    
-    modele = modelPlan("", "", "", "", "", None, 0, 0, "")
-    controleur = controleur(modele, None)
-    main_window = MainWindow(controleur)
-    controleur.vue = main_window
-    
-    main_window.show()
+    model = modelPlan("", "", "", "", "", None, 0, 0, "")
+    controleur_instance = controleur(model, None)
+    window = MainWindow(controleur_instance)
+    controleur_instance.vue = window
+    window.show()
     sys.exit(app.exec())

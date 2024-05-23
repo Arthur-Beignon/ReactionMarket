@@ -56,5 +56,5 @@ class modelPlan:
             },
             "chemin_image": self.chemin_image
         }
-        with open(fichier_sortie, 'w') as file:
-            json.dump(infos, file, indent=4)
+        with open(fichier_sortie, 'w', encoding='utf-8') as file:
+            json.dump(infos, file, indent=4, ensure_ascii=False)

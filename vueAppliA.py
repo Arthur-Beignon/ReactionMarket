@@ -49,9 +49,6 @@ class MainWindow(QMainWindow):
         font.setPointSize(40)
         self.central_widget.setFont(font)
         
-        
-    # Mettre à jour la vue
-    #def updateVue(self, outil: str) -> None:
     
     # Changer le thème
     def theme1(self):
@@ -70,10 +67,15 @@ class MainWindow(QMainWindow):
     # Afficher une image sur la partie centrale de l'application
     def afficher_image_central_widget(self, chemin):
         pixmap = QPixmap(chemin)
+        # Adapte la taille de l'image
         self.central_widget.setPixmap(pixmap.scaled(self.central_widget.size(), Qt.AspectRatioMode.KeepAspectRatio))
         self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.central_widget.setText("")
-        
+    
+    # Mettre à jour la vue avec les informations du plan
+    def afficher_informations_plan(self, modele):
+        if modele.chemin_image:
+            self.afficher_image_central_widget(modele.chemin_image)
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):
@@ -84,56 +86,57 @@ class MainWindow(QMainWindow):
             self.setFixedSize(500, 300)
             
             intituleNomProjet = QLabel("Nom du fichier : ")
-            nomProjet = QLineEdit()
+            self.nomProjet = QLineEdit()
             intituleAuteur = QLabel("Nom de l'auteur : ")
-            nomAuteur = QLineEdit()
+            self.nomAuteur = QLineEdit()
             intituleNomMagasin = QLabel("Nom du magasin : ")
-            nomMagasin = QLineEdit()
+            self.nomMagasin = QLineEdit()
             intituleAdresseMagasin = QLabel("Adresse du magasin : ")
-            adresseMagasin = QLineEdit()
+            self.adresseMagasin = QLineEdit()
             intituleLargeurGrille = QLabel("Largeur de la grille : ")
-            largeurGrille = QSpinBox()
-            largeurGrille.setRange(1, 1000)
+            self.largeurGrille = QSpinBox()
+            self.largeurGrille.setRange(1, 1000)
             intituleLongueurGrille = QLabel("Longueur de la grille : ")
-            longueurGrille = QSpinBox()
-            longueurGrille.setRange(1, 1000)
+            self.longueurGrille = QSpinBox()
+            self.longueurGrille.setRange(1, 1000)
             intituleProduits = QLabel("Fichier JSON des produits : ")
-            importerProduits = QPushButton('importer')
+            self.importerProduits = QPushButton('importer')
             intituleImage = QLabel("Image du plan : ")
-            importerImage = QPushButton('importer')
+            self.importerImage = QPushButton('importer')
             
-            
-            # RECUPERER DATE AUTOMATIQUEMENT
+            self.importerProduits.clicked.connect(self.ouvrir_fichier_produits)
+            self.importerImage.clicked.connect(self.ouvrir_fichier_image)
             
             layoutPrincipal = QGridLayout()
 
             # Ajout des widgets au layout principal
             layoutPrincipal.addWidget(intituleNomProjet, 0, 0)
-            layoutPrincipal.addWidget(nomProjet, 0, 1)
+            layoutPrincipal.addWidget(self.nomProjet, 0, 1)
             
             layoutPrincipal.addWidget(intituleAuteur, 1, 0)
-            layoutPrincipal.addWidget(nomAuteur, 1, 1)
+            layoutPrincipal.addWidget(self.nomAuteur, 1, 1)
             
             layoutPrincipal.addWidget(intituleNomMagasin, 2, 0)
-            layoutPrincipal.addWidget(nomMagasin, 2, 1)
+            layoutPrincipal.addWidget(self.nomMagasin, 2, 1)
             
             layoutPrincipal.addWidget(intituleAdresseMagasin, 3, 0)
-            layoutPrincipal.addWidget(adresseMagasin, 3, 1)
+            layoutPrincipal.addWidget(self.adresseMagasin, 3, 1)
             
             layoutPrincipal.addWidget(intituleLongueurGrille, 4, 0)
-            layoutPrincipal.addWidget(longueurGrille, 4, 1)
+            layoutPrincipal.addWidget(self.longueurGrille, 4, 1)
             
             layoutPrincipal.addWidget(intituleLargeurGrille, 5, 0)
-            layoutPrincipal.addWidget(largeurGrille, 5, 1)
+            layoutPrincipal.addWidget(self.largeurGrille, 5, 1)
             
             layoutPrincipal.addWidget(intituleProduits, 6, 0)
-            layoutPrincipal.addWidget(importerProduits, 6, 1)
+            layoutPrincipal.addWidget(self.importerProduits, 6, 1)
             
             layoutPrincipal.addWidget(intituleImage, 7, 0)
-            layoutPrincipal.addWidget(importerImage, 7, 1)
+            layoutPrincipal.addWidget(self.importerImage, 7, 1)
             
             validation = QPushButton("Valider")
             validation.setFixedSize(70, 30)
+            validation.clicked.connect(self.accept)
             
             validationLayout = QHBoxLayout()
             validationLayout.addStretch(1)
@@ -146,6 +149,9 @@ class MainWindow(QMainWindow):
             
             self.setLayout(layoutComplet)
             
+            self.fichier_produits = ""
+            self.fichier_image = ""
+            
         def ouvrir_fichier_produits(self):
             fichier, _ = QFileDialog.getOpenFileName(self, "Choisir un JSON avec les produits", "", "JSON Files (*.json);;All Files (*)")
             if fichier:
@@ -155,6 +161,18 @@ class MainWindow(QMainWindow):
             fichier, _ = QFileDialog.getOpenFileName(self, "Choisir une image de plan", "", "Images Files (*.png *.jpg *.jpeg *.gif);;All Files (*)")
             if fichier:
                 self.fichier_image = fichier
+        
+        def get_infos(self):
+            return {
+                'nom_projet': self.nomProjet.text(),
+                'auteur': self.nomAuteur.text(),
+                'nom_magasin': self.nomMagasin.text(),
+                'adresse_magasin': self.adresseMagasin.text(),
+                'largeur_grille': self.largeurGrille.value(),
+                'longueur_grille': self.longueurGrille.value(),
+                'fichier_produits': self.fichier_produits,
+                'chemin_image': self.fichier_image
+            }
         
         
 # Main
