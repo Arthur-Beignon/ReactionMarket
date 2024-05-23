@@ -5,21 +5,50 @@
     "nom_magasin": "Mon Magasin",
     "adresse_magasin": "123 Rue Exemple",
     "produits": {
-        "Légumes": [
+        "L\u00e9gumes": [
             "Carotte",
             "Salade"
         ],
         "Fruits": [
-            "Litchi"
+            "Litchi",
+            "Tomate",
+            "Fraise",
+            "Cerise",
+            "Orange"
         ]
     },
     "produit_coos": {
-        "Légumes": {
-            "Carotte": [1, 2],
-            "Salade": [3, 4]
+        "L\u00e9gumes": {
+            "Carotte": [
+                1,
+                2
+            ],
+            "Salade": [
+                3,
+                4
+            ]
         },
         "Fruits": {
-            "Litchi": [5, 6]
+            "Litchi": [
+                5,
+                6
+            ],
+            "Tomate": [
+                4,
+                5
+            ],
+            "Fraise": [
+                4,
+                5
+            ],
+            "Cerise": [
+                4,
+                5
+            ],
+            "Orange": [
+                4,
+                5
+            ]
         }
     },
     "grille": {
