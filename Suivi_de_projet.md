@@ -47,6 +47,6 @@
 ## 23/05/24
 
 ##### COTAR Clément  : assister lors de la création du fichier permettant de récupéré des coordonné du cadrillage pour les envoyer dans un json
-##### TELLIEZ LUC : 
+##### TELLIEZ LUC : Application A : nouveau fichier, ouvrir et enregister fonctionnelle, encodage en utf8 correcte
 ##### BEIGNON Arthur : recupération des coordonnée pour les sortir du json
 ##### LESAGE Mathéo : Recupération des coordonnée du cadrillage pour les envoyer dans un json  + début de l'implantation des coordonée du produit dans un fichier json 
