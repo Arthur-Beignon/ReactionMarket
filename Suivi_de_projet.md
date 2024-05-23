@@ -43,3 +43,10 @@
 ##### BEIGNON Arthur : Widget de selecteur de produit(par recupération de coordonée)
 ##### LESAGE Mathéo : Création d'un grillage sur les map de chaque magasins 
 
+
+## 23/05/24
+
+##### COTAR Clément  : assister lors de la création du fichier permettant de récupéré des coordonné du cadrillage pour les envoyer dans un json
+##### TELLIEZ LUC : 
+##### BEIGNON Arthur : recupération des coordonnée pour les sortir du json
+##### LESAGE Mathéo : Recupération des coordonnée du cadrillage pour les envoyer dans un json  + début de l'implantation des coordonée du produit dans un fichier json 
