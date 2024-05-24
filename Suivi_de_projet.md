@@ -50,3 +50,12 @@
 ##### TELLIEZ LUC : Application A : nouveau fichier, ouvrir et enregister fonctionnelle, encodage en utf8 correcte
 ##### BEIGNON Arthur : recupération des coordonnée pour les sortir du json
 ##### LESAGE Mathéo : Recupération des coordonnée du cadrillage pour les envoyer dans un json  + début de l'implantation des coordonée du produit dans un fichier json 
+
+
+## 24/05/24
+
+##### COTAR Clément  :  
+##### TELLIEZ LUC : Application A : correction de ouvrir_fichier, affichage des infos sur un plan dans le dock information
+##### BEIGNON Arthur : 
+##### LESAGE Mathéo : 
+
