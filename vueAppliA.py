@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QMessageBox, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
 
@@ -8,11 +8,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
-        
-        # Obtenir la taille de l'écran pour afficher l'application en plein écran correctement
-        screen = QApplication.primaryScreen()
-        screen_geometry = screen.geometry()
-        self.setGeometry(screen_geometry)
         
         # Barre de menu
         menu_bar = self.menuBar()
@@ -39,6 +34,10 @@ class MainWindow(QMainWindow):
         
         # Dock informations sur le plan
         self.dock = QDockWidget('Informations')
+        dock_widget = QWidget()
+        self.dock.setWidget(dock_widget)
+        dock_layout = QFormLayout(dock_widget)
+        dock_widget.setLayout(dock_layout)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMinimumSize(200, 120)
         
@@ -49,6 +48,8 @@ class MainWindow(QMainWindow):
         font.setPointSize(40)
         self.central_widget.setFont(font)
         
+        #Afficher l'application en plein écran
+        self.showMaximized()
     
     # Changer le thème
     def theme1(self):
@@ -74,8 +75,26 @@ class MainWindow(QMainWindow):
     
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
+        self.vider_dock_informations()
+        layoutInfo = self.dock.widget().layout()
+        
+        layoutInfo.addRow("Nom du projet:", QLabel(modele.nom_projet))
+        layoutInfo.addRow("Auteur:", QLabel(modele.auteur))
+        layoutInfo.addRow("Date de création:", QLabel(modele.date_creation))
+        layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
+        layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
         if modele.chemin_image:
             self.afficher_image_central_widget(modele.chemin_image)
+            
+    # Vider le contenu du dock d'informations
+    def vider_dock_informations(self):
+        layoutInfoVide = self.dock.widget().layout()
+        if layoutInfoVide is not None:
+            while layoutInfoVide.count() > 0:
+                item = layoutInfoVide.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()            
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):

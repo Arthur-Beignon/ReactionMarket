@@ -1,6 +1,7 @@
 from modelPlan import modelPlan
 from datetime import datetime
 from PyQt6.QtWidgets import QFileDialog
+import json
 
 class controleur:
     def __init__(self, modele, vue):
@@ -27,7 +28,21 @@ class controleur:
     def fichier_ouvrir(self):
         fichier, _ = QFileDialog.getOpenFileName(self.vue, "Ouvrir un projet", "", "JSON Files (*.json);;All Files (*)")
         if fichier:
-            self.model.lire_fichier(fichier)
+            with open(fichier, 'r', encoding='utf-8') as file:
+                fichierjson = json.load(file)
+            self.model = modelPlan(
+                fichierjson['nom_projet'],
+                fichierjson['auteur'],
+                fichierjson['date_creation'],
+                fichierjson['nom_magasin'],
+                fichierjson['adresse_magasin'],
+                None,
+                fichierjson['grille']['largeur'],
+                fichierjson['grille']['longueur'],
+                fichierjson['chemin_image']
+            )
+            self.model.produits = fichierjson['produits']
+            self.model.produit_coos = fichierjson['produit_coos']
             self.vue.afficher_informations_plan(self.model)
 
     def fichier_enregistrer(self):
