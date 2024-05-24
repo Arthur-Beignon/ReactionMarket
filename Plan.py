@@ -37,6 +37,7 @@ class Image(QLabel):
         
         # Met à jour l'image avec le quadrillage
         self.setPixmap(pixmap_with_grid)
+        self.setFixedSize(pixmap_with_grid.size())
 
     def set_largeur_case(self, largeur):
         self.largeur_case = largeur
