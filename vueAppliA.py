@@ -1,8 +1,65 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout
-from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar
+from PyQt6.QtCore import Qt, QUrl, QSize
+from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction, QPen, QPainter, QMouseEvent
 
+
+
+# Classe dédié à l'affichage de l'image et du quadrillage
+class image(QLabel):
+        def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
+            super().__init__()
+            self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
+            self.setPixmap(self.image)
+            self.largeur_case = largeur_cases
+            self.hauteur_case = hauteur_cases
+            self.dessiner_quadrillage()
+
+            
+        def dessiner_quadrillage(self):
+            if self.image.isNull():
+                return
+
+            pixmap_with_grid = QPixmap(self.image)
+            painter = QPainter(pixmap_with_grid)
+            painter.setPen(QPen(Qt.GlobalColor.black))
+
+            for x in range(0, pixmap_with_grid.width(), self.largeur_case):
+                painter.drawLine(x, 0, x, pixmap_with_grid.height())
+
+            for y in range(0, pixmap_with_grid.height(), self.hauteur_case):
+                painter.drawLine(0, y, pixmap_with_grid.width(), y)
+
+            painter.end()
+            self.setPixmap(pixmap_with_grid)
+            self.setFixedSize(pixmap_with_grid.size())
+            
+        def set_taille_cases(self, largeur_cases, hauteur_cases):
+            self.largeur_case = largeur_cases
+            self.hauteur_case = hauteur_cases
+            self.dessiner_quadrillage()
+
+        def set_largeur_case(self, largeur):
+            self.largeur_case = largeur
+            self.dessiner_quadrillage()
+
+        def set_hauteur_case(self, hauteur):
+            self.hauteur_case = hauteur
+            self.dessiner_quadrillage()
+
+        def mousePressEvent(self, event: QMouseEvent):
+            if event.button() == Qt.MouseButton.LeftButton:
+                x = event.position().x()
+                y = event.position().y()
+
+                case_x = int(x // self.largeur_case)
+                case_y = int(y // self.hauteur_case)
+
+                print(f"Clic dans la case: ({case_x}, {case_y})")
+                self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
+
+
+# Classe principale de l'application
 class MainWindow(QMainWindow):
     def __init__(self, controleur):
         super().__init__()
@@ -48,6 +105,10 @@ class MainWindow(QMainWindow):
         font.setPointSize(40)
         self.central_widget.setFont(font)
         
+        # Barre d'etat situé en bas de l'application
+        self.barre_etat = QStatusBar()
+        self.setStatusBar(self.barre_etat)
+        
         #Afficher l'application en plein écran
         self.showMaximized()
     
@@ -66,13 +127,12 @@ class MainWindow(QMainWindow):
         QDesktopServices.openUrl(QUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
     
     # Afficher une image sur la partie centrale de l'application
-    def afficher_image_central_widget(self, chemin):
-        pixmap = QPixmap(chemin)
-        # Adapte la taille de l'image
-        self.central_widget.setPixmap(pixmap.scaled(self.central_widget.size(), Qt.AspectRatioMode.KeepAspectRatio))
+    def afficher_image_central_widget(self, chemin, largeur_cases, hauteur_cases):
+        taille_fixe = QSize(self.central_widget.width(), self.central_widget.height())
+        self.central_widget = image(chemin, taille_fixe, largeur_cases, hauteur_cases)
         self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.central_widget.setText("")
-    
+        self.setCentralWidget(self.central_widget)
+        
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
         self.vider_dock_informations()
@@ -84,7 +144,11 @@ class MainWindow(QMainWindow):
         layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
         layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
         if modele.chemin_image:
-            self.afficher_image_central_widget(modele.chemin_image)
+            largeur_image = self.central_widget.width()
+            hauteur_image = self.central_widget.height()
+            largeur_cases = largeur_image // modele.largeur_grille
+            hauteur_cases = hauteur_image // modele.longueur_grille
+            self.afficher_image_central_widget(modele.chemin_image, largeur_cases, hauteur_cases)
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):
@@ -192,7 +256,6 @@ class MainWindow(QMainWindow):
                 'fichier_produits': self.fichier_produits,
                 'chemin_image': self.fichier_image
             }
-        
         
 # Main
 if __name__ == "__main__":

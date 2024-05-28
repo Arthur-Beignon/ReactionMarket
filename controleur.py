@@ -1,6 +1,7 @@
 from modelPlan import modelPlan
 from datetime import datetime
 from PyQt6.QtWidgets import QFileDialog
+from vueAppliA import image
 import json
 
 class controleur:
@@ -44,6 +45,15 @@ class controleur:
             self.model.produits = fichierjson['produits']
             self.model.produit_coos = fichierjson['produit_coos']
             self.vue.afficher_informations_plan(self.model)
+            
+            # Calculer la taille des cases
+            largeur_image = self.vue.central_widget.width()
+            hauteur_image = self.vue.central_widget.height()
+            largeur_cases = largeur_image // fichierjson['grille']['largeur']
+            hauteur_cases = hauteur_image // fichierjson['grille']['longueur']
+
+            # Afficher l'image et dessiner le quadrillage avec les dimensions correctes
+            self.vue.afficher_image_central_widget(self.model.chemin_image, largeur_cases, hauteur_cases)
 
     def fichier_enregistrer(self):
         fichier, _ = QFileDialog.getSaveFileName(self.vue, "Enregistrer un projet", "", "JSON Files (*.json);;All Files (*)")
