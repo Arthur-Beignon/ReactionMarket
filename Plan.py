@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QSpinBox, QPushButton
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen , QMouseEvent
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar, QLabel, QFileDialog, QVBoxLayout, QHBoxLayout, QWidget, QPushButton
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPen, QMouseEvent
 from PyQt6.QtCore import Qt, QSize
 
 
@@ -15,6 +15,7 @@ class Image(QLabel):
         self.setPixmap(self.image)
         self.largeur_case = 50
         self.hauteur_case = 50
+        self.fenetre_produits = None
 
     def dessiner_quadrillage(self):
         if self.image.isNull():
@@ -47,6 +48,27 @@ class Image(QLabel):
         self.hauteur_case = hauteur
         self.dessiner_quadrillage()
 
+    def rajouter_produits(self, coord_x: int, coord_y: int):
+        if self.fenetre_produits is not None:
+            self.fenetre_produits.close()
+
+        self.fenetre_produits = QWidget()
+        self.fenetre_produits.setWindowTitle("Ajouter Produits")
+        
+        layout = QVBoxLayout()
+        label_coord = QLabel(f"Coordonnées: ({coord_x}, {coord_y})")
+        layout.addWidget(label_coord)
+
+        layout_bouton = QHBoxLayout()
+        ok = QPushButton("Ok")
+        annuler = QPushButton("Annuler")
+        layout_bouton.addWidget(ok)
+        layout_bouton.addWidget(annuler)
+        
+        layout.addLayout(layout_bouton)
+        self.fenetre_produits.setLayout(layout)
+        self.fenetre_produits.show()
+
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             # Position du clic relatif à l'image
@@ -59,18 +81,7 @@ class Image(QLabel):
 
             print(f"Clic dans la case: ({case_x}, {case_y})")
             self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
-
-    def rajouter_produits(self,coord_x:int,coord_y:int):
-        appli=QWidget()
-        label_coord=QLabel("("+ coord_x + "," +coord_y + ")")
-        label_coord
-        layout_bouton=QHBoxLayout()
-        ok=QPushButton("Ok")
-        annuler=QPushButton("Annuler")
-        layout_bouton.addWidget(ok)
-        layout_bouton.addWidget(annuler)
-
-
+            self.rajouter_produits(case_x, case_y)
 
 
 # -----------------------------------------------------------------------------
@@ -103,7 +114,7 @@ class FenetreAppli(QMainWindow):
         menu_fichier.addAction('Ouvrir', self.ouvrir)
         menu_fichier.addAction('Enregistrer', self.enregistrer)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Quitter', self.destroy)
+        menu_fichier.addAction('Quitter', self.close)
 
         # Ajoute les contrôles pour ajuster la taille des cellules du quadrillage
         self.control_widget = QWidget()
@@ -150,7 +161,6 @@ class FenetreAppli(QMainWindow):
         self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.image)
         self.image.dessiner_quadrillage()
-
 
 
 # --- main --------------------------------------------------------------------
