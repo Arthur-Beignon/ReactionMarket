@@ -71,7 +71,7 @@
 ## 28/05/24
 
 ##### COTAR Clément  :  
-##### TELLIEZ LUC : Application A : 
+##### TELLIEZ LUC : Application A : Intégration du code de génération de grille, ajout de boutons permettant de changer la taille de la grille même quand un projet est ouvert
 ##### BEIGNON Arthur : 
 ##### LESAGE Mathéo : 
 
