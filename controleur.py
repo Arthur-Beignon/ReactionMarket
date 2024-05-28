@@ -59,4 +59,31 @@ class controleur:
         fichier, _ = QFileDialog.getSaveFileName(self.vue, "Enregistrer un projet", "", "JSON Files (*.json);;All Files (*)")
         if fichier:
             self.model.sauvegarder(fichier)
+            
+    def ajouter_ligne(self):
+        self.model.augmenter_longueur_grille()
+        self.mettre_a_jour_grille()
+        self.vue.label_longueur_grille.setText(str(self.model.longueur_grille))
+
+    def ajouter_colonne(self):
+        self.model.augmenter_largeur_grille()
+        self.mettre_a_jour_grille()
+        self.vue.label_largeur_grille.setText(str(self.model.largeur_grille))
+
+    def supprimer_ligne(self):
+        self.model.diminuer_longueur_grille()
+        self.mettre_a_jour_grille()
+        self.vue.label_longueur_grille.setText(str(self.model.longueur_grille))
+
+    def supprimer_colonne(self):
+        self.model.diminuer_largeur_grille()
+        self.mettre_a_jour_grille()
+        self.vue.label_largeur_grille.setText(str(self.model.largeur_grille))
+
+    def mettre_a_jour_grille(self):
+        largeur_image = self.vue.central_widget.width()
+        hauteur_image = self.vue.central_widget.height()
+        largeur_cases = largeur_image // self.model.largeur_grille
+        hauteur_cases = hauteur_image // self.model.longueur_grille
+        self.vue.afficher_image_central_widget(self.model.chemin_image, largeur_cases, hauteur_cases)
 

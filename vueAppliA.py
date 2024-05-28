@@ -143,12 +143,39 @@ class MainWindow(QMainWindow):
         layoutInfo.addRow("Date de création:", QLabel(modele.date_creation))
         layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
         layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
+        
+        self.label_largeur_grille = QLabel(str(modele.largeur_grille))
+        self.label_longueur_grille = QLabel(str(modele.longueur_grille))
+        layoutInfo.addRow("Nombre de colonne:", self.label_largeur_grille)
+        layoutInfo.addRow("Nombre de ligne:", self.label_longueur_grille)
+
+        
         if modele.chemin_image:
             largeur_image = self.central_widget.width()
             hauteur_image = self.central_widget.height()
             largeur_cases = largeur_image // modele.largeur_grille
             hauteur_cases = hauteur_image // modele.longueur_grille
             self.afficher_image_central_widget(modele.chemin_image, largeur_cases, hauteur_cases)
+        
+        espace = QLabel("")
+        espace.setFixedHeight(20)
+        layoutInfo.addRow(espace)
+        
+        # Ajout des boutons pour manipuler le quadrillage
+        ajouter_ligne_btn = QPushButton("Ajouter Ligne")
+        ajouter_colonne_btn = QPushButton("Ajouter Colonne")
+        supprimer_ligne_btn = QPushButton("Supprimer Ligne")
+        supprimer_colonne_btn = QPushButton("Supprimer Colonne")
+
+        ajouter_ligne_btn.clicked.connect(self.controleur.ajouter_ligne)
+        ajouter_colonne_btn.clicked.connect(self.controleur.ajouter_colonne)
+        supprimer_ligne_btn.clicked.connect(self.controleur.supprimer_ligne)
+        supprimer_colonne_btn.clicked.connect(self.controleur.supprimer_colonne)
+
+        layoutInfo.addRow(ajouter_ligne_btn)
+        layoutInfo.addRow(ajouter_colonne_btn)
+        layoutInfo.addRow(supprimer_ligne_btn)
+        layoutInfo.addRow(supprimer_colonne_btn)
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):

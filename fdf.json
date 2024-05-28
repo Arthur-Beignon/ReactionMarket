@@ -471,8 +471,8 @@
     },
     "produit_coos": {},
     "grille": {
-        "largeur": 10,
-        "longueur": 10
+        "largeur": 6,
+        "longueur": 5
     },
     "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan10.gif"
 }

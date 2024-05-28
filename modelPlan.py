@@ -58,3 +58,21 @@ class modelPlan:
         }
         with open(fichier_sortie, 'w', encoding='utf-8') as file:
             json.dump(infos, file, indent=4, ensure_ascii=False)
+    
+    # Agrandir la largeur de la grille     
+    def augmenter_largeur_grille(self):
+        self.largeur_grille += 1
+
+    # Diminuer la largeur de la grille  
+    def diminuer_largeur_grille(self):
+        if self.largeur_grille > 1:
+            self.largeur_grille -= 1
+
+    # Agrandir la longueur de la grille  
+    def augmenter_longueur_grille(self):
+        self.longueur_grille += 1
+
+    # Diminuer la longueur de la grille  
+    def diminuer_longueur_grille(self):
+        if self.longueur_grille > 1:
+            self.longueur_grille -= 1
