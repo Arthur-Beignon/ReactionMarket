@@ -1,12 +1,15 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QMessageBox 
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QMessageBox, QListWidget, QGroupBox, QScrollArea 
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtGui import QFont, QPixmap, QAction, QPen, QPainter, QMouseEvent
 
 
 
 # Classe dédié à l'affichage de l'image et du quadrillage
 class image(QLabel):
+    
+        case_clicked = pyqtSignal(int, int)
+    
         def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
             super().__init__()
             self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
@@ -57,6 +60,41 @@ class image(QLabel):
 
                 print(f"Clic dans la case: ({case_x}, {case_y})")
                 self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
+                self.case_clicked.emit(case_x, case_y)
+                
+
+
+# Interface qui s'affiche 
+class SelecteurProduit_special(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Sélecteur de Produit")
+        self.resize(400, 600)
+
+        mise_en_page_principale = QVBoxLayout()
+
+        layout_categories = QVBoxLayout()
+        self.liste_categories = QListWidget()
+        layout_categories.addWidget(self.liste_categories)
+
+        layout_produits = QVBoxLayout()
+        self.groupe_cases = QGroupBox("Produits")
+        self.disposition_cases = QVBoxLayout()
+        self.groupe_cases.setLayout(self.disposition_cases)
+
+        self.zone_defilement = QScrollArea()
+        self.zone_defilement.setWidgetResizable(True)
+        self.zone_defilement.setWidget(self.groupe_cases)
+        layout_produits.addWidget(self.zone_defilement)
+
+        bouton_envoyer = QPushButton("Envoyer")
+        mise_en_page_principale.addLayout(layout_categories)
+        mise_en_page_principale.addLayout(layout_produits)
+        mise_en_page_principale.addWidget(bouton_envoyer)
+
+        self.setLayout(mise_en_page_principale)
+
 
 
 # Classe principale de l'application
@@ -65,6 +103,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
+        
+        self.selecteur_produit = SelecteurProduit_special()
         
         # Barre de menu
         menu_bar = self.menuBar()
@@ -156,7 +196,11 @@ class MainWindow(QMainWindow):
         taille_fixe = QSize(self.central_widget.width(), self.central_widget.height())
         self.central_widget = image(chemin, taille_fixe, largeur_cases, hauteur_cases)
         self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.central_widget.case_clicked.connect(self.ouvrir_selecteur_produit)  # Connecter le signal
         self.setCentralWidget(self.central_widget)
+
+    def ouvrir_selecteur_produit(self, case_x, case_y):
+        self.selecteur_produit.show()
         
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
@@ -315,6 +359,9 @@ class MainWindow(QMainWindow):
                 'fichier_produits': self.fichier_produits,
                 'chemin_image': self.fichier_image
             }
+            
+        def ouvrir_selecteur_produit(self, case_x, case_y):
+            self.selecteur_produit.show()
         
 # Main
 if __name__ == "__main__":
