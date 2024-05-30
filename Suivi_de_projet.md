@@ -56,23 +56,23 @@
 
 ##### COTAR Clément  :  developpement de l'ecriture dans le json
 ##### TELLIEZ LUC : Application A : correction de ouvrir_fichier, affichage des infos sur un plan dans le dock information
-##### BEIGNON Arthur : 
-##### LESAGE Mathéo : 
+##### BEIGNON Arthur : recupération des coordonée dans le fichier json et de les mettres dans un dictionnaires 
+##### LESAGE Mathéo : reglage du quadrillageb afin d'avoir les bonne coordonée 
 
 
 ## 27/05/24
 
 ##### COTAR Clément  :  developpement de l'ecriture dans le json
 ##### TELLIEZ LUC : Application A : correction de ouvrir_fichier, affichage des infos sur un plan dans le dock information
-##### BEIGNON Arthur : 
-##### LESAGE Mathéo : 
+##### BEIGNON Arthur : recupération des coordonée dans le fichier json et de les mettres dans un dictionnaires 
+##### LESAGE Mathéo : Création de la fonction rajoutée produits
 
 
 ## 28/05/24
 
-##### COTAR Clément  :  
+##### COTAR Clément  :  developpement de l'ecriture dans le json
 ##### TELLIEZ LUC : Application A : Intégration du code de génération de grille, ajout de boutons permettant de changer la taille de la grille même quand un projet est ouvert
-##### BEIGNON Arthur : 
-##### LESAGE Mathéo : 
+##### BEIGNON Arthur : recupération des coordonée dans le fichier json et de les mettres dans un dictionnaires 
+##### LESAGE Mathéo : continue la fonction rajoutée produits
 
 
