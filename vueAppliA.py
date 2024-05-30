@@ -34,16 +34,20 @@ class SelecteurProduit_special(QWidget):
 
         bouton_envoyer = QPushButton("Envoyer")
         bouton_envoyer.clicked.connect(self.envoyer_selections)
+        LabelCategorie = QLabel("Sélection des catégories")
+        LabelProduit = QLabel("Sélection des produits")
 
+        mise_en_page_principale.addWidget(LabelCategorie)
         mise_en_page_principale.addLayout(layout_categories)
+        mise_en_page_principale.addWidget(LabelProduit)
         mise_en_page_principale.addLayout(layout_produits)
         mise_en_page_principale.addLayout(layout_produits_selectionnes)
         mise_en_page_principale.addWidget(bouton_envoyer)
 
         self.setLayout(mise_en_page_principale)
 
-        self.produits = self.charger_produits_depuis_fichier("jsonType.json")
-        self.produits_coordonnees = self.charger_coordonnees_produits_depuis_fichier("jsonType.json")
+        self.produits = self.charger_produits_depuis_fichier("test.json")
+        self.produits_coordonnees = self.charger_coordonnees_produits_depuis_fichier("test.json")
 
         self.selections_enregistrees = {categorie: set() for categorie in self.produits.keys()}
 
@@ -79,6 +83,9 @@ class SelecteurProduit_special(QWidget):
                 self.disposition_cases.addWidget(case)
 
         self.disposition_cases.addStretch()
+
+    # def getliste_produits_selectionnes(self,liste):
+
 
     def mettre_a_jour_liste_produits_selectionnes(self):
         self.liste_produits_selectionnes.clear()
@@ -117,7 +124,7 @@ class SelecteurProduit_special(QWidget):
         return coord_produits_selectionnes
 
     def ajouter_coordonnees_dans_json(self, coordonnees):
-        with open("jsonType.json", "r+") as fichier:
+        with open("test.json", "r+") as fichier:
             data = json.load(fichier)
             data["produit_coos"].update(coordonnees)
             fichier.seek(0)
@@ -195,13 +202,9 @@ class image(QLabel):
             label_coord = QLabel(f"Coordonnées: ({coord_x}, {coord_y})")
             layout.addWidget(label_coord)
 
-            layout_bouton = QHBoxLayout()
-            envoyer = QPushButton("Envoyer")
             annuler = QPushButton("Annuler")
-            layout_bouton.addWidget(annuler)
-            layout_bouton.addWidget(envoyer)
+            layout.addWidget(annuler)
 
-            layout.addLayout(layout_bouton)
             self.fenetre_produits.setLayout(layout)
             self.fenetre_produits.show()
 
