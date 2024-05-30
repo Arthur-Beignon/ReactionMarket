@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar
-from PyQt6.QtCore import Qt, QUrl, QSize
-from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction, QPen, QPainter, QMouseEvent
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QMessageBox 
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QFont, QPixmap, QAction, QPen, QPainter, QMouseEvent
 
 
 
@@ -74,9 +74,21 @@ class MainWindow(QMainWindow):
         menu_aide = menu_bar.addMenu('&Aide')
         
         # Options du menu fichier
-        menu_fichier.addAction('Nouveau', self.controleur.fichier_nouveau)
-        menu_fichier.addAction('Ouvrir', self.controleur.fichier_ouvrir)
-        menu_fichier.addAction('Enregistrer', self.controleur.fichier_enregistrer)
+        action_nouveau = QAction('Nouveau', self)
+        action_nouveau.setShortcut('Ctrl+N')
+        action_nouveau.triggered.connect(self.controleur.fichier_nouveau)
+        menu_fichier.addAction(action_nouveau)
+        
+        action_ouvrir = QAction('Ouvrir', self)
+        action_ouvrir.setShortcut('Ctrl+O')
+        action_ouvrir.triggered.connect(self.controleur.fichier_ouvrir)
+        menu_fichier.addAction(action_ouvrir)
+        
+        action_enregistrer = QAction('Enregistrer', self)
+        action_enregistrer.setShortcut('Ctrl+S')
+        action_enregistrer.triggered.connect(self.controleur.fichier_enregistrer)
+        menu_fichier.addAction(action_enregistrer)
+        
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
         
@@ -124,7 +136,20 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(qss)
             
     def aide(self):
-        QDesktopServices.openUrl(QUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
+        message_aide = QMessageBox()
+        message_aide.setWindowTitle("Aide")
+        message_aide.setText(
+            "Bienvenue dans le créateur de plan !\n\n"
+            "Voici quelques instructions pour utiliser l'application :\n\n"
+            "1. Nouveau : Créez un nouveau projet en fournissant les informations requises.\n"
+            "2. Ouvrir : Ouvrez un projet existant à partir d'un fichier JSON.\n"
+            "3. Enregistrer : Enregistrez le projet actuel dans un fichier JSON.\n"
+            "4. Thème : Changez le thème de l'application entre clair et sombre.\n\n"
+            "Pour plus d'aide, veuillez consulter la documentation ou contacter le support technique."
+        )
+        message_aide.setIcon(QMessageBox.Icon.Information)
+        message_aide.setStandardButtons(QMessageBox.StandardButton.Ok)
+        message_aide.exec()
     
     # Afficher une image sur la partie centrale de l'application
     def afficher_image_central_widget(self, chemin, largeur_cases, hauteur_cases):
@@ -162,20 +187,27 @@ class MainWindow(QMainWindow):
         layoutInfo.addRow(espace)
         
         # Ajout des boutons pour manipuler le quadrillage
-        ajouter_ligne_btn = QPushButton("Ajouter Ligne")
         ajouter_colonne_btn = QPushButton("Ajouter Colonne")
-        supprimer_ligne_btn = QPushButton("Supprimer Ligne")
+        ajouter_ligne_btn = QPushButton("Ajouter Ligne")
         supprimer_colonne_btn = QPushButton("Supprimer Colonne")
+        supprimer_ligne_btn = QPushButton("Supprimer Ligne")
 
-        ajouter_ligne_btn.clicked.connect(self.controleur.ajouter_ligne)
         ajouter_colonne_btn.clicked.connect(self.controleur.ajouter_colonne)
-        supprimer_ligne_btn.clicked.connect(self.controleur.supprimer_ligne)
+        ajouter_ligne_btn.clicked.connect(self.controleur.ajouter_ligne)
         supprimer_colonne_btn.clicked.connect(self.controleur.supprimer_colonne)
+        supprimer_ligne_btn.clicked.connect(self.controleur.supprimer_ligne)
 
-        layoutInfo.addRow(ajouter_ligne_btn)
         layoutInfo.addRow(ajouter_colonne_btn)
-        layoutInfo.addRow(supprimer_ligne_btn)
+        layoutInfo.addRow(ajouter_ligne_btn)
         layoutInfo.addRow(supprimer_colonne_btn)
+        layoutInfo.addRow(supprimer_ligne_btn)
+        
+        espace2 = QLabel("")
+        espace2.setFixedHeight(20)
+        layoutInfo.addRow(espace2)
+        
+        tuto = QLabel("Cliquez sur une case pour ajouter un produit")
+        layoutInfo.addRow(tuto)
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):

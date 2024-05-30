@@ -1,7 +1,6 @@
 from modelPlan import modelPlan
 from datetime import datetime
 from PyQt6.QtWidgets import QFileDialog
-from vueAppliA import image
 import json
 
 class controleur:
