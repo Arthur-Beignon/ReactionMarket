@@ -1,9 +1,128 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar
+import json
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QListWidget, QGroupBox, QScrollArea , QCheckBox
 from PyQt6.QtCore import Qt, QUrl, QSize
 from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction, QPen, QPainter, QMouseEvent
 
+class SelecteurProduit_special(QWidget):
+    def __init__(self):
+        super().__init__()
 
+        self.setWindowTitle("Sélecteur de Produit")
+        self.resize(300, 900)
+
+        mise_en_page_principale = QVBoxLayout()
+
+        layout_categories = QVBoxLayout()
+        self.liste_categories = QListWidget()
+        self.liste_categories.currentItemChanged.connect(self.sauvegarder_et_mettre_a_jour_cases)
+        layout_categories.addWidget(self.liste_categories)
+
+        layout_produits = QVBoxLayout()
+        self.groupe_cases = QGroupBox("Produits")
+        self.disposition_cases = QVBoxLayout()
+        self.groupe_cases.setLayout(self.disposition_cases)
+
+        self.zone_defilement = QScrollArea()
+        self.zone_defilement.setWidgetResizable(True)
+        self.zone_defilement.setWidget(self.groupe_cases)
+        layout_produits.addWidget(self.zone_defilement)
+
+        layout_produits_selectionnes = QVBoxLayout()
+        self.liste_produits_selectionnes = QListWidget()
+        layout_produits_selectionnes.addWidget(self.liste_produits_selectionnes)
+
+        bouton_envoyer = QPushButton("Envoyer")
+        bouton_envoyer.clicked.connect(self.envoyer_selections)
+
+        mise_en_page_principale.addLayout(layout_categories)
+        mise_en_page_principale.addLayout(layout_produits)
+        mise_en_page_principale.addLayout(layout_produits_selectionnes)
+        mise_en_page_principale.addWidget(bouton_envoyer)
+
+        self.setLayout(mise_en_page_principale)
+
+        self.produits = self.charger_produits_depuis_fichier("jsonType.json")
+        self.produits_coordonnees = self.charger_coordonnees_produits_depuis_fichier("jsonType.json")
+
+        self.selections_enregistrees = {categorie: set() for categorie in self.produits.keys()}
+
+        self.remplir_liste_categories()
+
+    def sauvegarder_et_mettre_a_jour_cases(self):
+        self.sauvegarder_selections()
+        self.mettre_a_jour_cases()
+        self.mettre_a_jour_liste_produits_selectionnes()
+
+    def sauvegarder_selections(self):
+        item_courant = self.liste_categories.currentItem()
+        if item_courant:
+            categorie = item_courant.text()
+            selections_actuelles = {case.text() for case in self.findChildren(QCheckBox) if case.isChecked()}
+            self.selections_enregistrees[categorie] = selections_actuelles
+
+    def mettre_a_jour_cases(self):
+        for i in reversed(range(self.disposition_cases.count())):
+            widget = self.disposition_cases.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
+
+        item_courant = self.liste_categories.currentItem()
+        if item_courant:
+            categorie = item_courant.text()
+
+            for produit in self.produits.get(categorie, []):
+                case = QCheckBox(produit)
+                case.stateChanged.connect(self.mettre_a_jour_liste_produits_selectionnes)
+                if produit in self.selections_enregistrees[categorie]:
+                    case.setChecked(True)
+                self.disposition_cases.addWidget(case)
+
+        self.disposition_cases.addStretch()
+
+    def mettre_a_jour_liste_produits_selectionnes(self):
+        self.liste_produits_selectionnes.clear()
+
+        for categorie, selections in self.selections_enregistrees.items():
+            for produit in selections:
+                self.liste_produits_selectionnes.addItem(f"{categorie}: {produit}")
+
+    def remplir_liste_categories(self):
+        self.liste_categories.addItems(self.produits.keys())
+
+    @staticmethod
+    def charger_produits_depuis_fichier(nom_fichier):
+        with open(nom_fichier, 'r') as fichier:
+            data = json.load(fichier)
+            return data.get("produits", {})
+
+    @staticmethod
+    def charger_coordonnees_produits_depuis_fichier(nom_fichier):
+        with open(nom_fichier, 'r') as fichier:
+            data = json.load(fichier)
+            return data.get("produit_coos", {})
+
+    def envoyer_selections(self):
+        coord_produits_selectionnes = self.trouver_coordonnees_selectionnees()
+        self.ajouter_coordonnees_dans_json(coord_produits_selectionnes)
+        print(coord_produits_selectionnes)
+        return coord_produits_selectionnes
+
+    def trouver_coordonnees_selectionnees(self):
+        coord_produits_selectionnes = {}
+        for categorie, produits in self.produits_coordonnees.items():
+            for produit, coordonnees in produits.items():
+                if produit in self.selections_enregistrees.get(categorie, set()):
+                    coord_produits_selectionnes[produit] = coordonnees
+        return coord_produits_selectionnes
+
+    def ajouter_coordonnees_dans_json(self, coordonnees):
+        with open("jsonType.json", "r+") as fichier:
+            data = json.load(fichier)
+            data["produit_coos"].update(coordonnees)
+            fichier.seek(0)
+            json.dump(data, fichier, indent=4)
+            fichier.truncate()
 
 # Classe dédié à l'affichage de l'image et du quadrillage
 class image(QLabel):
@@ -13,6 +132,7 @@ class image(QLabel):
             self.setPixmap(self.image)
             self.largeur_case = largeur_cases
             self.hauteur_case = hauteur_cases
+            self.fenetre_produits = None
             self.dessiner_quadrillage()
 
             
@@ -57,6 +177,33 @@ class image(QLabel):
 
                 print(f"Clic dans la case: ({case_x}, {case_y})")
                 self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
+                self.rajouter_produits(case_x, case_y)
+
+        def rajouter_produits(self, coord_x: int, coord_y: int):
+            if self.fenetre_produits is not None:
+                self.fenetre_produits.close()
+
+
+            self.fenetre_produits = QWidget()
+            self.fenetre_produits.setWindowTitle("Ajouter Produits")
+
+            layout = QVBoxLayout()
+            
+            produit=SelecteurProduit_special()
+            layout.addWidget(produit)
+
+            label_coord = QLabel(f"Coordonnées: ({coord_x}, {coord_y})")
+            layout.addWidget(label_coord)
+
+            layout_bouton = QHBoxLayout()
+            envoyer = QPushButton("Envoyer")
+            annuler = QPushButton("Annuler")
+            layout_bouton.addWidget(annuler)
+            layout_bouton.addWidget(envoyer)
+
+            layout.addLayout(layout_bouton)
+            self.fenetre_produits.setLayout(layout)
+            self.fenetre_produits.show()
 
 
 # Classe principale de l'application
