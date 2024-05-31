@@ -1,5 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 from modelPlanB import modelPlan
 from vueAppliB import MainWindow
 from controleurB import controleur

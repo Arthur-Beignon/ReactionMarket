@@ -1,13 +1,13 @@
-import sys
-from PyQt6.QtWidgets import QApplication,QMessageBox, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QListWidget, QCheckBox, QGroupBox, QScrollArea
+import sys  
+from PyQt6.QtWidgets import QApplication, QMessageBox, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QListWidget, QCheckBox, QGroupBox, QScrollArea
 from PyQt6.QtCore import Qt, QUrl, QSize
-from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction
-from SelecteurProduit import *
-
+from PyQt6.QtGui import QFont, QPixmap, QDesktopServices, QAction, QIcon
+from SelecteurProduit import SelecteurProduit
+from CoordonnéesDialog import CoordonneesDialog
 import json
 
 # Classe dédié à l'affichage de l'image et du quadrillage
-class image(QLabel):
+class Image(QLabel):
     def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
         super().__init__()
         self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
@@ -15,12 +15,12 @@ class image(QLabel):
         self.largeur_case = largeur_cases
         self.hauteur_case = hauteur_cases
 
-
 class MainWindow(QMainWindow):
     def __init__(self, controleur_instance):
         super().__init__()
         self.setWindowTitle("Gestionnaire de plan")
         self.controleur = controleur_instance
+        self.setWindowIcon(QIcon('image/logo.png'))
 
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu('&Fichier')
@@ -33,10 +33,8 @@ class MainWindow(QMainWindow):
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
 
-
         menu_theme.addAction('Thème clair', self.theme1)
         menu_theme.addAction('Thème sombre', self.theme2)
-
 
         action_aide = QAction("Documentation", self)
         action_aide.triggered.connect(self.aide)
@@ -60,8 +58,20 @@ class MainWindow(QMainWindow):
         font.setPointSize(40)
         self.central_widget.setFont(font)
 
+        # Ajoutez l'action pour ouvrir la boîte de dialogue des coordonnées de départ
+        coord_action = QAction("Coordonnées de départ", self)
+        coord_action.triggered.connect(self.open_coord_dialog)
+        menu_edition.addAction(coord_action)
+
         self.barre_etat = QStatusBar()
         self.setStatusBar(self.barre_etat)
+
+        # Ajout du bouton pour demander les coordonnées de départ
+        bouton_coordonnees = QPushButton("Coordonnées de départ", self)
+        bouton_coordonnees.clicked.connect(self.demander_coordonnees_depart)
+        dock_layout.addWidget(bouton_coordonnees)
+
+        self.coordonnees_depart = (0, 0)  # Valeur par défaut
 
         self.showMaximized()
 
@@ -77,20 +87,26 @@ class MainWindow(QMainWindow):
         if fichier:
             self.controleur.enregistrer_plan(fichier)
 
+    def open_coord_dialog(self):
+        dialog = CoordonneesDialog()
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            coordinates = dialog.get_coordinates()
+            QMessageBox.information(self, "Coordonnées de départ", f"Coordonnées saisies : {coordinates}")
+
     def mise_a_jour_vue(self):
         modele = self.controleur.modele
-        layoutInfo = self.dock.widget().layout()
+        layout_info = self.dock.widget().layout()
 
-        layoutInfo.addRow("Nom du projet:", QLabel(modele.nom_projet))
-        layoutInfo.addRow("Auteur:", QLabel(modele.auteur))
-        layoutInfo.addRow("Date de création:", QLabel(modele.date_creation))
-        layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
-        layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
+        layout_info.addRow("Nom du projet:", QLabel(modele.nom_projet))
+        layout_info.addRow("Auteur:", QLabel(modele.auteur))
+        layout_info.addRow("Date de création:", QLabel(modele.date_creation))
+        layout_info.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
+        layout_info.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
 
         self.label_largeur_grille = QLabel(str(modele.largeur_grille))
         self.label_longueur_grille = QLabel(str(modele.longueur_grille))
-        layoutInfo.addRow("Nombre de colonne:", self.label_largeur_grille)
-        layoutInfo.addRow("Nombre de ligne:", self.label_longueur_grille)
+        layout_info.addRow("Nombre de colonne:", self.label_largeur_grille)
+        layout_info.addRow("Nombre de ligne:", self.label_longueur_grille)
 
         if modele.chemin_image:
             largeur_image = self.central_widget.width()
@@ -101,24 +117,23 @@ class MainWindow(QMainWindow):
 
         espace = QLabel("")
         espace.setFixedHeight(20)
-        layoutInfo.addRow(espace)
-    
-     # Changer le thème
+        layout_info.addRow(espace)
+
     def theme1(self):
         qss = ""
         self.setStyleSheet(qss)
 
     def theme2(self):
         fichier_style = open(sys.path[0] + "/fichiers_qss/Takezo.qss", 'r')
-        with fichier_style :
+        with fichier_style:
             qss = fichier_style.read()
             self.setStyleSheet(qss)
 
     def vider_dock_informations(self):
-        layoutInfoVide = self.dock.widget().layout()
-        if layoutInfoVide is not None:
-            while layoutInfoVide.count() > 0:
-                item = layoutInfoVide.takeAt(0)
+        layout_info_vide = self.dock.widget().layout()
+        if layout_info_vide is not None:
+            while layout_info_vide.count() > 0:
+                item = layout_info_vide.takeAt(0)
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
@@ -139,68 +154,74 @@ class MainWindow(QMainWindow):
         message_aide.setStandardButtons(QMessageBox.StandardButton.Ok)
         message_aide.exec()
 
-    class nv_fichier(QDialog):
+    def demander_coordonnees_depart(self):
+        dialog = CoordonneesDialog()
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.coordonnees_depart = dialog.get_coordonnees()
+            QMessageBox.information(self, "Coordonnées de départ", f"Coordonnées de départ : {self.coordonnees_depart}")
+
+    class NvFichier(QDialog):
         def __init__(self):
             super().__init__()
 
             self.setWindowTitle("Nouveau fichier")
             self.setFixedSize(500, 300)
             
-            intituleNomProjet = QLabel("Nom du fichier : ")
-            self.nomProjet = QLineEdit()
-            intituleAuteur = QLabel("Nom de l'auteur : ")
-            self.nomAuteur = QLineEdit()
-            intituleNomMagasin = QLabel("Nom du magasin : ")
-            self.nomMagasin = QLineEdit()
-            intituleAdresseMagasin = QLabel("Adresse du magasin : ")
-            self.adresseMagasin = QLineEdit()
-            intituleLargeurGrille = QLabel("Largeur de la grille : ")
-            self.largeurGrille = QSpinBox()
-            self.largeurGrille.setRange(1, 1000)
-            intituleLongueurGrille = QLabel("Longueur de la grille : ")
-            self.longueurGrille = QSpinBox()
-            self.longueurGrille.setRange(1, 1000)
-            intituleProduits = QLabel("Fichier JSON des produits : ")
-            self.importerProduits = QPushButton('importer')
-            intituleImage = QLabel("Image du plan : ")
-            self.importerImage = QPushButton('importer')
+            intitule_nom_projet = QLabel("Nom du fichier : ")
+            self.nom_projet = QLineEdit()
+            intitule_auteur = QLabel("Nom de l'auteur : ")
+            self.nom_auteur = QLineEdit()
+            intitule_nom_magasin = QLabel("Nom du magasin : ")
+            self.nom_magasin = QLineEdit()
+            intitule_adresse_magasin = QLabel("Adresse du magasin : ")
+            self.adresse_magasin = QLineEdit()
+            intitule_largeur_grille = QLabel("Largeur de la grille : ")
+            self.largeur_grille = QSpinBox()
+            self.largeur_grille.setRange(1, 1000)
+            intitule_longueur_grille = QLabel("Longueur de la grille : ")
+            self.longueur_grille = QSpinBox()
+            self.longueur_grille.setRange(1, 1000)
+            intitule_produits = QLabel("Fichier JSON des produits : ")
+            self.importer_produits = QPushButton('importer')
+            intitule_image = QLabel("Image du plan : ")
+            self.importer_image = QPushButton('importer')
             
-            self.importerProduits.clicked.connect(self.ouvrir_fichier_produits)
-            self.importerImage.clicked.connect(self.ouvrir_fichier_image)
+            self.importer_produits.clicked.connect(self.ouvrir_fichier_produits)
+            self.importer_image.clicked.connect(self.ouvrir_fichier_image)
             
-            layoutPrincipal = QGridLayout()
+            layout_principal = QGridLayout()
 
-            layoutPrincipal.addWidget(intituleNomProjet, 0, 0)
-            layoutPrincipal.addWidget(self.nomProjet, 0, 1)
-            layoutPrincipal.addWidget(intituleAuteur, 1, 0)
-            layoutPrincipal.addWidget(self.nomAuteur, 1, 1)
-            layoutPrincipal.addWidget(intituleNomMagasin, 2, 0)
-            layoutPrincipal.addWidget(self.nomMagasin, 2, 1)
-            layoutPrincipal.addWidget(intituleAdresseMagasin, 3, 0)
-            layoutPrincipal.addWidget(self.adresseMagasin, 3, 1)
-            layoutPrincipal.addWidget(intituleLargeurGrille, 4, 0)
-            layoutPrincipal.addWidget(self.largeurGrille, 4, 1)
-            layoutPrincipal.addWidget(intituleLongueurGrille, 5, 0)
-            layoutPrincipal.addWidget(self.longueurGrille, 5, 1)
-            layoutPrincipal.addWidget(intituleProduits, 6, 0)
-            layoutPrincipal.addWidget(self.importerProduits, 6, 1)
-            layoutPrincipal.addWidget(intituleImage, 7, 0)
-            layoutPrincipal.addWidget(self.importerImage, 7, 1)
+            layout_principal.addWidget(intitule_nom_projet, 0, 0)
+            layout_principal.addWidget(self.nom_projet, 0, 1)
+            layout_principal.addWidget(intitule_auteur, 1, 0)
+            layout_principal.addWidget(self.nom_auteur, 1, 1)
+            layout_principal.addWidget(intitule_nom_magasin, 2, 0)
+            layout_principal.addWidget(self.nom_magasin, 2, 1)
+            layout_principal.addWidget(intitule_adresse_magasin, 3, 0)
+            layout_principal.addWidget(self.adresse_magasin, 3, 1)
+            layout_principal.addWidget(intitule_largeur_grille, 4, 0)
+            layout_principal.addWidget(self.largeur_grille, 4, 1)
+            layout_principal.addWidget(intitule_longueur_grille, 5, 0)
+            layout_principal.addWidget(self.longueur_grille, 5, 1)
+            layout_principal.addWidget(intitule_produits, 6, 0)
+            layout_principal.addWidget(self.importer_produits, 6, 1)
+            layout_principal.addWidget(intitule_image, 7, 0)
+            layout_principal.addWidget(self.importer_image, 7, 1)
             
             validation = QPushButton("Valider")
             validation.setFixedSize(70, 30)
             validation.clicked.connect(self.accept)
             
-            validationLayout = QHBoxLayout()
-            validationLayout.addStretch(1)
-            validationLayout.addWidget(validation)
+            validation_layout = QHBoxLayout()
+            validation_layout.addStretch(1)
+            validation_layout.addWidget(validation)
 
-            layoutComplet = QVBoxLayout()
-            layoutComplet.addLayout(layoutPrincipal)
-            layoutComplet.addStretch(1)
-            layoutComplet.addLayout(validationLayout)
+            layout_complet = QVBoxLayout()
+            layout_complet.addLayout(layout_principal)
+            layout_complet.addStretch(1)
+            layout_complet.addLayout(validation_layout)
             
-            self.setLayout(layoutComplet)
+            self.setLayout(layout_complet)
             
             self.fichier_produits = ""
             self.fichier_image = ""
@@ -217,20 +238,20 @@ class MainWindow(QMainWindow):
         
         def get_infos(self):
             return {
-                'nom_projet': self.nomProjet.text(),
-                'auteur': self.nomAuteur.text(),
-                'nom_magasin': self.nomMagasin.text(),
-                'adresse_magasin': self.adresseMagasin.text(),
-                'largeur_grille': self.largeurGrille.value(),
-                'longueur_grille': self.longueurGrille.value(),
+                'nom_projet': self.nom_projet.text(),
+                'auteur': self.nom_auteur.text(),
+                'nom_magasin': self.nom_magasin.text(),
+                'adresse_magasin': self.adresse_magasin.text(),
+                'largeur_grille': self.largeur_grille.value(),
+                'longueur_grille': self.longueur_grille.value(),
                 'fichier_produits': self.fichier_produits,
                 'chemin_image': self.fichier_image
             }
 
-        
 # Main
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(None)  # Remplacez `None` par l'instance de votre contrôleur
     window.show()
     sys.exit(app.exec())
+
