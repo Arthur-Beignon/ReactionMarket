@@ -203,10 +203,14 @@ class image(QLabel):
             layout.addWidget(label_coord)
 
             annuler = QPushButton("Annuler")
+            annuler.clicked.connect(self.fenetre_produits.close)
             layout.addWidget(annuler)
+
 
             self.fenetre_produits.setLayout(layout)
             self.fenetre_produits.show()
+
+            
 
 
 # Classe principale de l'application
