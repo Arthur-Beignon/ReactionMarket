@@ -75,4 +75,17 @@
 ##### BEIGNON Arthur : recupération des coordonée dans le fichier json et de les mettres dans un dictionnaires 
 ##### LESAGE Mathéo : continue la fonction rajoutée produits
 
+## 30/05/24
 
+##### COTAR Clément  :  
+##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
+##### BEIGNON Arthur :  
+##### LESAGE Mathéo : 
+
+
+## 31/05/24
+
+##### COTAR Clément  :  
+##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
+##### BEIGNON Arthur :  
+##### LESAGE Mathéo : 
