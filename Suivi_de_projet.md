@@ -72,14 +72,14 @@
 
 ##### COTAR Clément  :  developpement de l'ecriture dans le json
 ##### TELLIEZ LUC : Application A : Intégration du code de génération de grille, ajout de boutons permettant de changer la taille de la grille même quand un projet est ouvert
-##### BEIGNON Arthur : recupération des coordonée dans le fichier json et de les mettres dans un dictionnaires 
+##### BEIGNON Arthur : recupération des coordonées dans le fichier json et de les mettres dans un dictionnaires 
 ##### LESAGE Mathéo : continue la fonction rajoutée produits
 
 ## 30/05/24
 
 ##### COTAR Clément  :  
 ##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
-##### BEIGNON Arthur :  
+##### BEIGNON Arthur : recupération des coordonées dans le fichier json et de les mettres dans un dictionnaires (fonctionne enfin)  
 ##### LESAGE Mathéo : 
 
 
@@ -87,5 +87,5 @@
 
 ##### COTAR Clément  :  
 ##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
-##### BEIGNON Arthur :  
+##### BEIGNON Arthur : Application B : MVC, amélioration de la vue.  
 ##### LESAGE Mathéo : 
