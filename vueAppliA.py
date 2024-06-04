@@ -32,8 +32,6 @@ class SelecteurProduit_special(QWidget):
         self.liste_produits_selectionnes = QListWidget()
         layout_produits_selectionnes.addWidget(self.liste_produits_selectionnes)
 
-        bouton_envoyer = QPushButton("Envoyer")
-        bouton_envoyer.clicked.connect(self.envoyer_selections)
         LabelCategorie = QLabel("Sélection des catégories")
         LabelProduit = QLabel("Sélection des produits")
 
@@ -42,7 +40,6 @@ class SelecteurProduit_special(QWidget):
         mise_en_page_principale.addWidget(LabelProduit)
         mise_en_page_principale.addLayout(layout_produits)
         mise_en_page_principale.addLayout(layout_produits_selectionnes)
-        mise_en_page_principale.addWidget(bouton_envoyer)
 
         self.setLayout(mise_en_page_principale)
 
@@ -190,25 +187,35 @@ class image(QLabel):
             if self.fenetre_produits is not None:
                 self.fenetre_produits.close()
 
-
             self.fenetre_produits = QWidget()
             self.fenetre_produits.setWindowTitle("Ajouter Produits")
 
             layout = QVBoxLayout()
             
-            produit=SelecteurProduit_special()
+            produit = SelecteurProduit_special()
             layout.addWidget(produit)
-
+        
             label_coord = QLabel(f"Coordonnées: ({coord_x}, {coord_y})")
             layout.addWidget(label_coord)
-
+        
             annuler = QPushButton("Annuler")
             annuler.clicked.connect(self.fenetre_produits.close)
             layout.addWidget(annuler)
-
-
+        
+            valider = QPushButton("Valider")
+            valider.clicked.connect(lambda: self.envoyer_produits_selectionnes(produit, coord_x, coord_y))
+            layout.addWidget(valider)
+        
             self.fenetre_produits.setLayout(layout)
             self.fenetre_produits.show()
+
+        def envoyer_produits_selectionnes(self, produit, coord_x, coord_y):
+            produits_selectionnes = produit.envoyer_selections()
+            coordonnees = {"x": coord_x, "y": coord_y}
+            produits_selectionnes.update(coordonnees)
+
+            with open("produits_selectionnes.json", "w") as fichier:
+                json.dump(produits_selectionnes, fichier, indent=4)
 
             
 
