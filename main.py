@@ -13,3 +13,4 @@ if __name__ == "__main__":
     controleur_instance.vue = window
     window.show()
     sys.exit(app.exec())
+    

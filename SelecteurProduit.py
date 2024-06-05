@@ -1,6 +1,6 @@
-import json
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QListWidget, QCheckBox, QGroupBox, QScrollArea, QPushButton, QMessageBox
 from PyQt6.QtCore import Qt
+import json
 
 class SelecteurProduit(QWidget):
     def __init__(self):
@@ -53,9 +53,7 @@ class SelecteurProduit(QWidget):
         self.data = self.charger_donnees_depuis_fichier("jsonType.json")
         self.produits = self.data.get("produits", {})
         self.produits_coos = self.data.get("produit_coos", {})
-
         self.selections_enregistrees = {categorie: set() for categorie in self.produits.keys()}
-
         self.remplir_liste_categories()
 
     def sauvegarder_et_mettre_a_jour_cases(self):
@@ -132,7 +130,7 @@ class SelecteurProduit(QWidget):
         message = json.dumps(dict_produits_avec_coos, indent=4, ensure_ascii=False)
         msg_box = QMessageBox()
         msg_box.setText(message)
-        msg_box.exec()
+        msg_box.exec_()
 
     @staticmethod
     def charger_donnees_depuis_fichier(nom_fichier):
