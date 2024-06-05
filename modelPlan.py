@@ -76,3 +76,11 @@ class modelPlan:
     def diminuer_longueur_grille(self):
         if self.longueur_grille > 1:
             self.longueur_grille -= 1
+            
+    # Vérifier si une case contient des produits        
+    def case_contient_produits(self, x, y):
+        for categorie in self.produit_coos:
+            for coordonnees in self.produit_coos[categorie].items():
+                if coordonnees == (x, y):
+                    return True
+        return False

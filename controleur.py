@@ -44,21 +44,22 @@ class controleur:
             self.model.produits = fichierjson['produits']
             self.model.produit_coos = fichierjson['produit_coos']
             self.vue.afficher_informations_plan(self.model)
-            
-            # Calculer la taille des cases
+
             largeur_image = self.vue.central_widget.width()
             hauteur_image = self.vue.central_widget.height()
             largeur_cases = largeur_image // fichierjson['grille']['largeur']
             hauteur_cases = hauteur_image // fichierjson['grille']['longueur']
-
-            # Afficher l'image et dessiner le quadrillage avec les dimensions correctes
             self.vue.afficher_image_central_widget(self.model.chemin_image, largeur_cases, hauteur_cases)
+            
+            for categorie in self.model.produit_coos:
+                for _, (x, y) in self.model.produit_coos[categorie].items():
+                    self.vue.central_widget.colorier_case(x, y)
 
     def fichier_enregistrer(self):
         fichier, _ = QFileDialog.getSaveFileName(self.vue, "Enregistrer un projet", "", "JSON Files (*.json);;All Files (*)")
         if fichier:
             self.model.sauvegarder(fichier)
-            
+
     def ajouter_ligne(self):
         self.model.augmenter_longueur_grille()
         self.mettre_a_jour_grille()
@@ -85,4 +86,14 @@ class controleur:
         largeur_cases = largeur_image // self.model.largeur_grille
         hauteur_cases = hauteur_image // self.model.longueur_grille
         self.vue.afficher_image_central_widget(self.model.chemin_image, largeur_cases, hauteur_cases)
+
+    def placer_produit(self, categorie, produit, case_x, case_y):
+        self.model.ajt_produit(categorie, produit, case_x, case_y)
+        print("{produit} ajouté à la case ({case_x}, {case_y}).")
+        
+    def attribuer_coordonnes_produit(self, categorie, produit, case_x, case_y):
+        self.model.ajt_produit(categorie, produit, case_x, case_y)
+        print(f"Produit '{produit}' attribué à la case ({case_x}, {case_y}).")
+        self.model.sauvegarder('chemin_vers_votre_fichier.json')
+        self.vue.central_widget.colorier_case(case_x, case_y)
 

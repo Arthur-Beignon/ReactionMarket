@@ -1,84 +1,100 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QMessageBox, QListWidget, QGroupBox, QScrollArea 
+from PyQt6.QtWidgets import QApplication, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QMessageBox, QListWidget, QGroupBox, QScrollArea, QListWidgetItem
 from PyQt6.QtCore import Qt, QSize, pyqtSignal
-from PyQt6.QtGui import QFont, QPixmap, QAction, QPen, QPainter, QMouseEvent
+from PyQt6.QtGui import QFont, QPixmap, QAction, QPen, QPainter, QMouseEvent, QColor, QBrush
 
 
 
 # Classe dédié à l'affichage de l'image et du quadrillage
 class image(QLabel):
     
-        case_clicked = pyqtSignal(int, int)
-    
-        def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
-            super().__init__()
-            self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
-            self.setPixmap(self.image)
-            self.largeur_case = largeur_cases
-            self.hauteur_case = hauteur_cases
-            self.dessiner_quadrillage()
+    case_clicked = pyqtSignal(int, int)
 
-            
-        def dessiner_quadrillage(self):
-            if self.image.isNull():
-                return
+    def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
+        super().__init__()
+        self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
+        self.setPixmap(self.image)
+        self.largeur_case = largeur_cases
+        self.hauteur_case = hauteur_cases
+        self.cases_colorees = [] 
+        self.dessiner_quadrillage()
 
-            pixmap_with_grid = QPixmap(self.image)
-            painter = QPainter(pixmap_with_grid)
-            painter.setPen(QPen(Qt.GlobalColor.black))
+    def dessiner_quadrillage(self):
+        if self.image.isNull():
+            return
 
-            for x in range(0, pixmap_with_grid.width(), self.largeur_case):
-                painter.drawLine(x, 0, x, pixmap_with_grid.height())
+        pixmap_with_grid = QPixmap(self.image)
+        painter = QPainter(pixmap_with_grid)
+        painter.setPen(QPen(Qt.GlobalColor.black))
 
-            for y in range(0, pixmap_with_grid.height(), self.hauteur_case):
-                painter.drawLine(0, y, pixmap_with_grid.width(), y)
+        for x in range(0, pixmap_with_grid.width(), self.largeur_case):
+            painter.drawLine(x, 0, x, pixmap_with_grid.height())
 
-            painter.end()
-            self.setPixmap(pixmap_with_grid)
-            self.setFixedSize(pixmap_with_grid.size())
-            
-        def set_taille_cases(self, largeur_cases, hauteur_cases):
-            self.largeur_case = largeur_cases
-            self.hauteur_case = hauteur_cases
-            self.dessiner_quadrillage()
+        for y in range(0, pixmap_with_grid.height(), self.hauteur_case):
+            painter.drawLine(0, y, pixmap_with_grid.width(), y)
 
-        def set_largeur_case(self, largeur):
-            self.largeur_case = largeur
-            self.dessiner_quadrillage()
+        # Colorier les cases qui contiennent des produits
+        couleur = QColor(0, 255, 0, 128) 
+        painter.setBrush(QBrush(couleur))
+        for case in self.cases_colorees:
+            painter.drawRect(case[0] * self.largeur_case, case[1] * self.hauteur_case, self.largeur_case, self.hauteur_case)
 
-        def set_hauteur_case(self, hauteur):
-            self.hauteur_case = hauteur
-            self.dessiner_quadrillage()
+        painter.end()
+        self.setPixmap(pixmap_with_grid)
+        self.setFixedSize(pixmap_with_grid.size())
 
-        def mousePressEvent(self, event: QMouseEvent):
-            if event.button() == Qt.MouseButton.LeftButton:
-                x = event.position().x()
-                y = event.position().y()
+    def set_taille_cases(self, largeur_cases, hauteur_cases):
+        self.largeur_case = largeur_cases
+        self.hauteur_case = hauteur_cases
+        self.dessiner_quadrillage()
 
-                case_x = int(x // self.largeur_case)
-                case_y = int(y // self.hauteur_case)
+    def set_largeur_case(self, largeur):
+        self.largeur_case = largeur
+        self.dessiner_quadrillage()
 
-                print(f"Clic dans la case: ({case_x}, {case_y})")
-                self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
-                self.case_clicked.emit(case_x, case_y)
+    def set_hauteur_case(self, hauteur):
+        self.hauteur_case = hauteur
+        self.dessiner_quadrillage()
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.MouseButton.LeftButton:
+            x = event.position().x()
+            y = event.position().y()
+
+            case_x = int(x // self.largeur_case)
+            case_y = int(y // self.hauteur_case)
+
+            print(f"Clic dans la case: ({case_x}, {case_y})")
+            self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
+            self.case_clicked.emit(case_x, case_y)
+
+    def colorier_case(self, case_x, case_y):
+        if (case_x, case_y) not in self.cases_colorees:
+            self.cases_colorees.append((case_x, case_y))
+        self.dessiner_quadrillage()
                 
 
 
-# Interface qui s'affiche 
+# Interface qui s'affiche quand on clique sur une case
 class SelecteurProduit_special(QWidget):
+    produits_attribues = pyqtSignal(list, int, int)
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Sélecteur de Produit")
         self.resize(400, 600)
 
-        mise_en_page_principale = QVBoxLayout()
+        self.mise_en_page_principale = QVBoxLayout()
 
-        layout_categories = QVBoxLayout()
+        self.layout_categories = QVBoxLayout()
+        self.label_categorie = QLabel("Categorie")
         self.liste_categories = QListWidget()
-        layout_categories.addWidget(self.liste_categories)
+        self.liste_categories.itemClicked.connect(self.afficher_produits)
+        self.layout_categories.addWidget(self.label_categorie)
+        self.layout_categories.addWidget(self.liste_categories)
 
-        layout_produits = QVBoxLayout()
+        self.layout_produits = QVBoxLayout()
         self.groupe_cases = QGroupBox("Produits")
         self.disposition_cases = QVBoxLayout()
         self.groupe_cases.setLayout(self.disposition_cases)
@@ -86,14 +102,48 @@ class SelecteurProduit_special(QWidget):
         self.zone_defilement = QScrollArea()
         self.zone_defilement.setWidgetResizable(True)
         self.zone_defilement.setWidget(self.groupe_cases)
-        layout_produits.addWidget(self.zone_defilement)
+        self.layout_produits.addWidget(self.zone_defilement)
 
-        bouton_envoyer = QPushButton("Envoyer")
-        mise_en_page_principale.addLayout(layout_categories)
-        mise_en_page_principale.addLayout(layout_produits)
-        mise_en_page_principale.addWidget(bouton_envoyer)
+        self.bouton_attribuer = QPushButton("Placer les produits")
+        self.bouton_attribuer.clicked.connect(self.attribuer_coordonnes)
 
-        self.setLayout(mise_en_page_principale)
+        self.mise_en_page_principale.addLayout(self.layout_categories)
+        self.mise_en_page_principale.addLayout(self.layout_produits)
+        self.mise_en_page_principale.addWidget(self.bouton_attribuer)
+
+        self.setLayout(self.mise_en_page_principale)
+
+    def afficher_produits(self, item):
+        categorie = item.text()
+        produits = self.produits.get(categorie, [])
+        for i in reversed(range(self.disposition_cases.count())): 
+            widget = self.disposition_cases.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
+        self.liste_produits = QListWidget()
+        self.liste_produits.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
+        for produit in produits:
+            item_produit = QListWidgetItem(produit)
+            self.liste_produits.addItem(item_produit)
+        self.disposition_cases.addWidget(self.liste_produits)
+        self.disposition_cases.setContentsMargins(0, 0, 0, 0)
+        self.disposition_cases.setSpacing(0)
+        self.groupe_cases.setLayout(self.disposition_cases)
+
+    def attribuer_coordonnes(self):
+        produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
+        self.produits_attribues.emit(produits_selectionnes, self.case_x, self.case_y)
+        self.close()
+
+    def charger_categories(self, categories_produits):
+        self.produits = categories_produits
+        self.liste_categories.clear()
+        for categorie in categories_produits:
+            self.liste_categories.addItem(categorie)
+
+    def definir_coordonnes_case(self, case_x, case_y):
+        self.case_x = case_x
+        self.case_y = case_y
 
 
 
@@ -105,6 +155,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Gestionnaire de plan")
         
         self.selecteur_produit = SelecteurProduit_special()
+        self.selecteur_produit.produits_attribues.connect(self.attribuer_coordonnes_produits)
         
         # Barre de menu
         menu_bar = self.menuBar()
@@ -206,19 +257,18 @@ class MainWindow(QMainWindow):
     def afficher_informations_plan(self, modele):
         self.vider_dock_informations()
         layoutInfo = self.dock.widget().layout()
-        
+
         layoutInfo.addRow("Nom du projet:", QLabel(modele.nom_projet))
         layoutInfo.addRow("Auteur:", QLabel(modele.auteur))
         layoutInfo.addRow("Date de création:", QLabel(modele.date_creation))
         layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
         layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
-        
+
         self.label_largeur_grille = QLabel(str(modele.largeur_grille))
         self.label_longueur_grille = QLabel(str(modele.longueur_grille))
         layoutInfo.addRow("Nombre de colonne:", self.label_largeur_grille)
         layoutInfo.addRow("Nombre de ligne:", self.label_longueur_grille)
 
-        
         if modele.chemin_image:
             largeur_image = self.central_widget.width()
             hauteur_image = self.central_widget.height()
@@ -252,6 +302,8 @@ class MainWindow(QMainWindow):
         
         tuto = QLabel("Cliquez sur une case pour ajouter un produit")
         layoutInfo.addRow(tuto)
+        
+        self.selecteur_produit.charger_categories(modele.get_categories_produits())
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):
@@ -261,7 +313,20 @@ class MainWindow(QMainWindow):
                 item = layoutInfoVide.takeAt(0)
                 widget = item.widget()
                 if widget is not None:
-                    widget.deleteLater()            
+                    widget.deleteLater()
+                    
+    def ouvrir_selecteur_produit(self, case_x, case_y):
+        self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
+        self.selecteur_produit.show()
+
+    def attribuer_coordonnes_produits(self, produits, case_x, case_y):
+        for produit in produits:
+            categorie = "default"
+            self.controleur.attribuer_coordonnes_produit(categorie, produit, case_x, case_y)
+        self.central_widget.colorier_case(case_x, case_y)
+
+    def produit_selectionne(self, produit):
+        print(f"Produit sélectionné : {produit}")          
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):

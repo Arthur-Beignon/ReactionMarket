@@ -1,14 +1,27 @@
 {
-    "nom_projet": "Plan_Test",
+    "nom_projet": "Plan_test1",
     "auteur": "Luc",
-    "date_creation": "2024-05-30 08:49:49",
-    "nom_magasin": "LucMarket",
-    "adresse_magasin": "1 rue de l'IUT",
+    "date_creation": "2024-06-05 17:22:28",
+    "nom_magasin": "Auchan",
+    "adresse_magasin": "Rue de l'IUT",
     "produits": {
         "Légumes": [
             "Avocat",
             "Courgette",
-            "Topinambour"
+            "Topinambour",
+            "Courge",
+            "Courgette",
+            "Cresson",
+            "Échalote",
+            "Endive",
+            "Épinards",
+            "Fenouil",
+            "Flageolets",
+            "Germe de soja",
+            "Gingembre",
+            "Haricot",
+            "Lentilles",
+            "Macédoine"
         ],
         "Poissons": [
             "Cabillaud",
@@ -86,10 +99,29 @@
             "Pâtées"
         ]
     },
-    "produit_coos": {},
-    "grille": {
-        "largeur": 4,
-        "longueur": 8
+    "produit_coos": {
+        "default": {
+            "Cornichons": [
+                2,
+                3
+            ],
+            "Farine": [
+                2,
+                3
+            ],
+            "Feuilles de brick": [
+                0,
+                0
+            ],
+            "Dattes": [
+                0,
+                0
+            ]
+        }
     },
-    "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan6.jpg"
+    "grille": {
+        "largeur": 8,
+        "longueur": 7
+    },
+    "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan8.jpg"
 }

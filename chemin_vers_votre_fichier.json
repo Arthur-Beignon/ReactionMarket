@@ -1,0 +1,127 @@
+{
+    "nom_projet": "Plan_test1",
+    "auteur": "Luc",
+    "date_creation": "2024-06-05 17:22:28",
+    "nom_magasin": "Auchan",
+    "adresse_magasin": "Rue de l'IUT",
+    "produits": {
+        "Légumes": [
+            "Avocat",
+            "Courgette",
+            "Topinambour",
+            "Courge",
+            "Courgette",
+            "Cresson",
+            "Échalote",
+            "Endive",
+            "Épinards",
+            "Fenouil",
+            "Flageolets",
+            "Germe de soja",
+            "Gingembre",
+            "Haricot",
+            "Lentilles",
+            "Macédoine"
+        ],
+        "Poissons": [
+            "Cabillaud",
+            "Colin",
+            "Coquille St-Jacques"
+        ],
+        "Viandes": [
+            "Aiguillette de poulet",
+            "Côte de boeuf",
+            "Steak haché"
+        ],
+        "Épicerie": [
+            "Cornichons",
+            "Farine",
+            "Sel"
+        ],
+        "Épicerie sucrée": [
+            "Cassonade",
+            "Citron confits",
+            "Dattes"
+        ],
+        "Petit déjeuner": [
+            "Barres chocolatées",
+            "Biscottes",
+            "Brioche"
+        ],
+        "Fruits": [
+            "Abricots",
+            "Ananas",
+            "Bananes"
+        ],
+        "Rayon frais": [
+            "Croque monsieur",
+            "Crudités",
+            "Feuilles de brick"
+        ],
+        "Crèmerie": [
+            "Beurre",
+            "Boisson lactée",
+            "Crème dessert"
+        ],
+        "Conserves": [
+            "Sauce tomate",
+            "Soupes",
+            "Thon"
+        ],
+        "Apéritifs": [
+            "Tarama",
+            "Tuiles salées",
+            "Tzatziki"
+        ],
+        "Boissons": [
+            "Sirop",
+            "Soda",
+            "Vin"
+        ],
+        "Articles Maison": [
+            "Savon",
+            "Sel machine",
+            "Serviettes papier"
+        ],
+        "Hygiène": [
+            "Rasoirs",
+            "Savon main",
+            "Shampooing"
+        ],
+        "Bureau": [
+            "Taille-crayon",
+            "Timbres",
+            "Trombones"
+        ],
+        "Animaux": [
+            "Graines",
+            "Litière",
+            "Pâtées"
+        ]
+    },
+    "produit_coos": {
+        "default": {
+            "Cornichons": [
+                2,
+                3
+            ],
+            "Farine": [
+                2,
+                3
+            ],
+            "Feuilles de brick": [
+                0,
+                0
+            ],
+            "Dattes": [
+                0,
+                0
+            ]
+        }
+    },
+    "grille": {
+        "largeur": 8,
+        "longueur": 7
+    },
+    "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan8.jpg"
+}
