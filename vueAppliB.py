@@ -90,7 +90,6 @@ class MainWindow(QMainWindow):
                 self.mise_a_jour_vue(data)
                 self.selecteur_produit.charger_donnees_depuis_fichier(fichier)
 
-
     def fichier_enregistrer(self):
         fichier, _ = QFileDialog.getSaveFileName(self, "Enregistrer le fichier JSON", "", "JSON Files (*.json);;All Files (*)")
         if fichier:
@@ -162,25 +161,45 @@ class MainWindow(QMainWindow):
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             # Appeler la fonction pour utiliser l'algorithme de Dijkstra ici
-            self.utiliser_djiska()
+            self.utiliser_djiskstra()
         else:
             print("Algorithme de Dijkstra désactivé")
 
-    def utiliser_djiska(self):
-        # Récupérer les points de départ définis
-        points_depart = [self.coordonnees_depart]  # Utilisez les coordonnées de départ définies dans la classe
-        # Utiliser le dictionnaire des produits sélectionnés avec coordonnées
-        produits_selectionnes = self.selecteur_produit.creer_dictionnaire_produits_avec_coos()
-        # Appeler la fonction dijkstra avec les points de départ et le dictionnaire des produits sélectionnés
-        chemin_optimal = dijkstra(produits_selectionnes, points_depart)
-        if chemin_optimal:
-            # Extraire la liste des produits dans l'ordre à partir du chemin optimal
-            liste_produits = [produit for produit, _ in chemin_optimal]  # Assurez-vous que chemin_optimal contient uniquement des noms de produits
-            # Afficher la fenêtre avec la liste des produits à récupérer
-            liste_window = ListeProduitsWindow(liste_produits)
-            liste_window.exec()
-        else:
-            QMessageBox.warning(self, "Aucun chemin trouvé", "Aucun chemin optimal trouvé pour les produits sélectionnés.")
+    def utiliser_djiskstra(self):
+        graphe = self.construire_graphe_depuis_donnees()
+        coord_depart = self.coordonnees_depart
+        dict_produits_avec_coos = self.selecteur_produit.creer_dictionnaire_produits_avec_coos()
+
+        coords_produits_selectionnes = list(dict_produits_avec_coos.values())
+
+        chemins, distances = dijkstra(graphe, coord_depart, coords_produits_selectionnes)
+        self.afficher_chemins(chemins, distances)
+
+    def construire_graphe_depuis_donnees(self):
+            data = self.charger_donnees_graphe('graphe_donnees.json')
+
+            graphe = {}
+
+            # Initialiser les noeuds dans le graphe
+            for noeud in data["noeuds"]:
+                graphe[noeud] = []
+
+            # Ajouter les arêtes avec les poids dans le graphe
+            for arete in data["aretes"]:
+                de = arete["de"]
+                vers = arete["vers"]
+                poids = arete["poids"]
+                graphe[de].append((vers, poids))
+                graphe[vers].append((de, poids))  # Si le graphe est non dirigé
+
+            return graphe
+        
+
+    def afficher_chemins(self, chemins, distances):
+        # Méthode pour afficher ou traiter les chemins et les distances
+        print("Chemins:", chemins)
+        print("Distances:", distances)
+    
 
 
     class NvFichier(QDialog):
