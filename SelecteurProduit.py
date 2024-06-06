@@ -128,7 +128,7 @@ class SelecteurProduit(QWidget):
         message = json.dumps(dict_produits_avec_coos, indent=4, ensure_ascii=False)
         msg_box = QMessageBox()
         msg_box.setText(message)
-        msg_box.exec_()
+        msg_box.exec()
 
     @staticmethod
     def charger_donnees_depuis_fichier(nom_fichier):
