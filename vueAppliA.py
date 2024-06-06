@@ -179,86 +179,94 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
-        
+
         self.selecteur_produit = SelecteurProduit_special()
         self.selecteur_produit.produits_attribues.connect(self.produits_attribues)
-        
+
         # Barre de menu
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu('&Fichier')
         menu_edition = menu_bar.addMenu('&Edition')
         menu_theme = menu_bar.addMenu('&Thème')
         menu_aide = menu_bar.addMenu('&Aide')
-        
+
         # Options du menu fichier
         action_nouveau = QAction('Nouveau', self)
         action_nouveau.setShortcut('Ctrl+N')
         action_nouveau.triggered.connect(self.controleur.fichier_nouveau)
         menu_fichier.addAction(action_nouveau)
-        
+
         action_ouvrir = QAction('Ouvrir', self)
         action_ouvrir.setShortcut('Ctrl+O')
         action_ouvrir.triggered.connect(self.controleur.fichier_ouvrir)
         menu_fichier.addAction(action_ouvrir)
-        
+
         action_enregistrer = QAction('Enregistrer', self)
         action_enregistrer.setShortcut('Ctrl+S')
         action_enregistrer.triggered.connect(self.controleur.fichier_enregistrer)
         menu_fichier.addAction(action_enregistrer)
-        
+
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
-        
+
         # Options du menu édition
         self.action_plusColonne = QAction('+1 Colonne', self)
         self.action_plusColonne.triggered.connect(self.controleur.ajouter_colonne)
         menu_edition.addAction(self.action_plusColonne)
-        
+
         self.action_plusLigne = QAction('+1 Ligne', self)
         self.action_plusLigne.triggered.connect(self.controleur.ajouter_ligne)
         menu_edition.addAction(self.action_plusLigne)
-        
+
         self.action_moinsColonne = QAction('-1 Colonne', self)
         self.action_moinsColonne.triggered.connect(self.controleur.supprimer_colonne)
         menu_edition.addAction(self.action_moinsColonne)
-        
+
         self.action_moinsLigne = QAction('-1 Ligne', self)
         self.action_moinsLigne.triggered.connect(self.controleur.supprimer_ligne)
         menu_edition.addAction(self.action_moinsLigne)
-        
+
         # Désactiver les actions d'édition initialement, quand aucun plan n'est chargé
         self.set_actions_enabled(False)
-        
+
         # Options du menu thème
         menu_theme.addAction('Thème clair', self.theme1)
         menu_theme.addAction('Thème sombre', self.theme2)
-        
+
         # Options du menu aide
         action_aide = QAction("Documentation", self)
         action_aide.triggered.connect(self.aide)
         menu_aide.addAction(action_aide)
+
+        # Création des widgets conteneurs pour les informations et les produits
+        self.info_widget = QWidget()
+        self.info_layout = QFormLayout(self.info_widget)
+        
+        self.produits_widget = QWidget()
+        self.produits_layout = QFormLayout(self.produits_widget)
         
         # Dock informations sur le plan
         self.dock = QDockWidget('Informations')
         dock_widget = QWidget()
+        dock_layout = QVBoxLayout(dock_widget)  # Utilisez QVBoxLayout pour empiler verticalement
+        dock_layout.addWidget(self.info_widget)
+        dock_layout.addWidget(self.produits_widget)
         self.dock.setWidget(dock_widget)
-        dock_layout = QFormLayout(dock_widget)
-        dock_widget.setLayout(dock_layout)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMinimumSize(200, 120)
-        
+
         # Zone centrale avec l'image
         self.central_widget = QLabel('Importer un plan', alignment=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter)
         self.setCentralWidget(self.central_widget)
         font = QFont()
         font.setPointSize(40)
         self.central_widget.setFont(font)
-        
+
         # Barre d'etat situé en bas de l'application
         self.barre_etat = QStatusBar()
         self.setStatusBar(self.barre_etat)
-        
-        #Afficher l'application en plein écran
+
+        # Afficher l'application en plein écran
         self.showMaximized()
 
     # Méthode pour activer ou désactiver les actions d'édition
@@ -311,7 +319,7 @@ class MainWindow(QMainWindow):
     def ouvrir_selecteur_produit(self, case_x, case_y):
         produits = self.controleur.get_produits_case(case_x, case_y)
         if produits:
-            self.afficher_produits_dans_case(produits, case_x, case_y)
+            self.info_produit_case(produits, case_x, case_y)
         else:
             self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
             self.selecteur_produit.show()
@@ -319,18 +327,17 @@ class MainWindow(QMainWindow):
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
         self.vider_dock_informations()
-        layoutInfo = self.dock.widget().layout()
-
-        layoutInfo.addRow("Nom du projet:", QLabel(modele.nom_projet))
-        layoutInfo.addRow("Auteur:", QLabel(modele.auteur))
-        layoutInfo.addRow("Date de création:", QLabel(modele.date_creation))
-        layoutInfo.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
-        layoutInfo.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
+        
+        self.info_layout.addRow("Nom du projet:", QLabel(modele.nom_projet))
+        self.info_layout.addRow("Auteur:", QLabel(modele.auteur))
+        self.info_layout.addRow("Date de création:", QLabel(modele.date_creation))
+        self.info_layout.addRow("Nom du magasin:", QLabel(modele.nom_magasin))
+        self.info_layout.addRow("Adresse du magasin:", QLabel(modele.adresse_magasin))
 
         self.label_largeur_grille = QLabel(str(modele.largeur_grille))
         self.label_longueur_grille = QLabel(str(modele.longueur_grille))
-        layoutInfo.addRow("Nombre de colonne:", self.label_largeur_grille)
-        layoutInfo.addRow("Nombre de ligne:", self.label_longueur_grille)
+        self.info_layout.addRow("Nombre de colonne:", self.label_largeur_grille)
+        self.info_layout.addRow("Nombre de ligne:", self.label_longueur_grille)
 
         if modele.chemin_image:
             largeur_image = self.central_widget.width()
@@ -341,7 +348,7 @@ class MainWindow(QMainWindow):
         
         espace = QLabel("")
         espace.setFixedHeight(20)
-        layoutInfo.addRow(espace)
+        self.info_layout.addRow(espace)
         
         # Ajout des boutons pour manipuler le quadrillage
         ajouter_colonne_btn = QPushButton("Ajouter Colonne")
@@ -358,19 +365,19 @@ class MainWindow(QMainWindow):
         supprimer_colonne_btn.clicked.connect(self.controleur.supprimer_colonne)
         supprimer_ligne_btn.clicked.connect(self.controleur.supprimer_ligne)
 
-        layoutInfo.addRow(ajouter_colonne_btn)
-        layoutInfo.addRow(ajouter_ligne_btn)
-        layoutInfo.addRow(supprimer_colonne_btn)
-        layoutInfo.addRow(supprimer_ligne_btn)
-        layoutInfo.addRow(infos_btn)
+        self.info_layout.addRow(ajouter_colonne_btn)
+        self.info_layout.addRow(ajouter_ligne_btn)
+        self.info_layout.addRow(supprimer_colonne_btn)
+        self.info_layout.addRow(supprimer_ligne_btn)
+        self.info_layout.addRow(infos_btn)
         
         espace2 = QLabel("")
         espace2.setFixedHeight(20)
-        layoutInfo.addRow(espace2)
+        self.info_layout.addRow(espace2)
         
         tuto = QLabel("Cliquez sur une case pour ajouter un produit")
         tuto.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layoutInfo.addRow(tuto)
+        self.info_layout.addRow(tuto)
         
         self.selecteur_produit.charger_categories(modele.get_categories_produits())
         
@@ -379,17 +386,40 @@ class MainWindow(QMainWindow):
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):
-        layoutInfoVide = self.dock.widget().layout()
-        if layoutInfoVide is not None:
-            while layoutInfoVide.count() > 0:
-                item = layoutInfoVide.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
+        while self.info_layout.count() > 0:
+            item = self.info_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+        while self.produits_layout.count() > 0:
+            item = self.produits_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
     
     # Emettre le signal qu'un produit est sélectionné vers le contrôleur
     def produits_attribues(self, produits, categories, case_x, case_y):
         self.controleur.attribuer_coordonnes_produits(produits, categories, case_x, case_y)
+        
+    # Afficher les informations des produits contenu dans une case sur le dock d'information
+    def info_produit_case(self, produits, case_x, case_y):
+        while self.produits_layout.count() > 0:
+            item = self.produits_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+        self.produits_layout.addRow(QLabel(f"Produits dans la case ({case_x}, {case_y}):"))
+        for produit in produits:
+            self.produits_layout.addRow(QLabel(produit))
+    
+    # Effacer les informations du contenu d'une case dans le dock
+    def effacer_info_produit_case(self):
+        layoutInfo = self.dock.widget().layout()
+        while layoutInfo.count() > 0:
+            item = layoutInfo.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):

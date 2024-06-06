@@ -133,6 +133,6 @@ class controleur:
         produits_dans_case = []
         for categorie, produits in self.model.produit_coos.items():
             for produit, coords in produits.items():
-                if coords == (case_x, case_y):
-                    produits_dans_case.append(produit)
+                if coords == [case_x, case_y]:  # Notez que coords est une liste dans votre JSON
+                    produits_dans_case.append(f"{categorie}: {produit}")
         return produits_dans_case
