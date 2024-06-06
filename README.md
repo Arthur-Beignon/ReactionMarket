@@ -31,7 +31,7 @@ un fichier Json ou s'on inscrit les différent produit.
 
 ### Appli B:
 
-L'appli B appel à l'algorithme de Dijkstra pour déterminer le chemin le plus court et donc créer un chemin dans une liste de produits choisi <- 2ème App
+L'appli B appel à l'algorithme de Dijkstra pour déterminer le chemin le plus court et donc créer un chemin dans une liste de produits choisi
 
 ### Bibliothèque obligatoire pour le bon fonctionnement
 
