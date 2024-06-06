@@ -10,25 +10,28 @@ Membre du projet : TELLIEZ Luc, LESAGE Mathéo, COTAR Clément & BEIGNON Arthur
 
 Le but de ce projet est de créé deux application.
 
-### Appli A
+### Appli A:
 
-La premiere l'appli A a destination des magasins a pour but de permettre la gestion du magasins.
+La premiere application, l'appli A a destination des magasins a pour but de permettre la gestion du magasins.
 
-###
-La seconde l'appli B a destination des particuliers a pour but de les renseignaient en leur indiquant le chemin le plus court afin de récupérer tout les articles qu'ils auront préalablement sélectionnée.
+### Appli B:
+La seconde application, l'appli B a destination des particuliers a pour but de les renseignaient en leur indiquant le chemin le plus court afin de récupérer tout les articles qu'ils auront préalablement sélectionnée.
 
 ## Comment sa marche
 
 
 ### Appli A:
 
-Elle a pour but d'implementer un plan en choissisant le nombre de case permmetant d'y placer différent produit
-Lorsqu'elle clique à un endroit du plan, les coordonnées se mettent dans un fichier Json 
+Le fonctionnement de la première application est d'implementer un plan en choississant le nombre de case permmetant d'y placer différent produit.
+Lorsqu'elle clique à un endroit du plan une fenêtre s'ouvre afin que l'utilisateur entre les info concernant ce plan.
+
+Par la suite l'utilisateur peut ouvrir le plan et modifier le nombre de case ou modifier le contenu de ces cases les coordonnées se mettent dans 
+un fichier Json ou s'on inscrit les différent produit.
 
 
 ### Appli B:
 
-Ensuite, il y aura une autre interface graphique, ou on fait appel à un algorithme pour déterminer le chemin le plus court et donc créer un chemin dans une liste de produits choisi <- 2ème App
+L'appli B appel à l'algorithme de Dijkstra pour déterminer le chemin le plus court et donc créer un chemin dans une liste de produits choisi <- 2ème App
 
 ### Bibliothèque obligatoire pour le bon fonctionnement
 
