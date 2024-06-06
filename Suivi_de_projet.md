@@ -80,7 +80,7 @@
 ##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
 ##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
 ##### BEIGNON Arthur : recupération des coordonées dans le fichier json et de les mettres dans un dictionnaires (fonctionne enfin)  
-##### LESAGE Mathéo : 
+##### LESAGE Mathéo : continue la fonction rajoutée produits
 
 
 ## 31/05/24
@@ -88,4 +88,20 @@
 ##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
 ##### TELLIEZ LUC : Application A : Intégration de l'interface qui apparait quand on clique sur une case
 ##### BEIGNON Arthur : Application B : MVC, amélioration de la vue.  
-##### LESAGE Mathéo : 
+##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
+
+## 04/06/24
+
+##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
+##### TELLIEZ LUC : Application A : 
+##### BEIGNON Arthur : Application B : implémentation de Djikstra 
+##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
+
+
+## 06/06/24
+
+
+##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
+##### TELLIEZ LUC : 
+##### BEIGNON Arthur : Creation de la notice d'utilisation de l'appli A 
+##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
