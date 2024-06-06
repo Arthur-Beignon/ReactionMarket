@@ -122,10 +122,9 @@ class controleur:
     def placer_produit(self, categorie, produit, case_x, case_y):
         self.model.ajt_produit(categorie, produit, case_x, case_y)
         
-    # Attribuer des coordonnées à un produit dans une case   
-    def attribuer_coordonnes_produits(self, produits, case_x, case_y):
-        for produit in produits:
-            categorie = "default"
+    # Attribuer des coordonnées d'une case à un produit, enregistre aussi sa catégorie   
+    def attribuer_coordonnes_produits(self, produits, categories, case_x, case_y):
+        for produit, categorie in zip(produits, categories):
             self.model.ajt_produit(categorie, produit, case_x, case_y)
             self.vue.central_widget.colorier_case(case_x, case_y)
 

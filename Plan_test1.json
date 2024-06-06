@@ -1,27 +1,14 @@
 {
-    "nom_projet": "Plan_test1",
+    "nom_projet": "Plan_Test1",
     "auteur": "Luc",
-    "date_creation": "2024-06-05 17:22:28",
-    "nom_magasin": "Auchan",
-    "adresse_magasin": "Rue de l'IUT",
+    "date_creation": "2024-06-06 15:29:47",
+    "nom_magasin": "RectangleFour",
+    "adresse_magasin": "1 rue de l'IUT",
     "produits": {
         "Légumes": [
             "Avocat",
             "Courgette",
-            "Topinambour",
-            "Courge",
-            "Courgette",
-            "Cresson",
-            "Échalote",
-            "Endive",
-            "Épinards",
-            "Fenouil",
-            "Flageolets",
-            "Germe de soja",
-            "Gingembre",
-            "Haricot",
-            "Lentilles",
-            "Macédoine"
+            "Topinambour"
         ],
         "Poissons": [
             "Cabillaud",
@@ -100,20 +87,30 @@
         ]
     },
     "produit_coos": {
-        "default": {
-            "Savon": [
-                5,
-                4
+        "Légumes": {
+            "Courgette": [
+                0,
+                0
             ],
-            "Avocat":[
+            "Avocat": [
+                0,
+                0
+            ],
+            "Topinambour": [
+                1,
+                0
+            ]
+        },
+        "Petit déjeuner": {
+            "Barres chocolatées": [
                 0,
                 0
             ]
         }
     },
     "grille": {
-        "largeur": 8,
-        "longueur": 7
+        "largeur": 25,
+        "longueur": 25
     },
-    "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan8.jpg"
+    "chemin_image": "C:/Users/Luc/Desktop/BUT/BUT1/SAEs/SAE_interface/ReactionMarket/plans/plan4.png"
 }

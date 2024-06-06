@@ -54,7 +54,6 @@ class image(QLabel):
             case_x = int(x // self.largeur_case)
             case_y = int(y // self.hauteur_case)
 
-            print(f"Clic dans la case: ({case_x}, {case_y})")
             self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
             self.case_clicked.emit(case_x, case_y)
 
@@ -68,7 +67,7 @@ class image(QLabel):
 
 # Interface qui s'affiche quand on clique sur une case
 class SelecteurProduit_special(QWidget):
-    produits_attribues = pyqtSignal(list, int, int)
+    produits_attribues = pyqtSignal(list, list, int, int)
 
     # Constructeur de la classe SelecteurProduit_special
     def __init__(self):
@@ -128,15 +127,14 @@ class SelecteurProduit_special(QWidget):
 
     # Attribuer les coordonnées d'une case à un produit
     def attribuer_coordonnes(self):
-        if hasattr(self, 'liste_produits'):
-            produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
-            if produits_selectionnes:
-                self.produits_attribues.emit(produits_selectionnes, self.case_x, self.case_y)
-                self.close()
-            else:
-                self.afficher_message_erreur("Veuillez sélectionner au moins un produit")
+        produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
+        if produits_selectionnes:
+            categorie_selectionnee = self.liste_categories.currentItem().text()
+            categories_selectionnees = [categorie_selectionnee] * len(produits_selectionnes)
+            self.produits_attribues.emit(produits_selectionnes, categories_selectionnees, self.case_x, self.case_y)
+            self.close()
         else:
-            self.afficher_message_erreur("Veuillez sélectionner une catégorie et au moins un produit")
+            self.afficher_message_erreur("Veuillez sélectionner au moins un produit avant de placer.")
             
     # Charger les catégories de produits dans le sélecteur
     def charger_categories(self, categories_produits):
@@ -145,11 +143,23 @@ class SelecteurProduit_special(QWidget):
         for categorie in categories_produits:
             self.liste_categories.addItem(categorie)
 
-    # Définir les coordonnées d'une case, prend une abscisse et un ordonnée en paramètre
+    # Définir les coordonnées d'une case, prend une abscisse et une ordonnée en paramètre
     def definir_coordonnes_case(self, case_x, case_y):
         self.case_x = case_x
         self.case_y = case_y
+        self.effacer_selections()
     
+    # Effacer les sélections dans la liste des produits et des catégories
+    def effacer_selections(self):
+        if hasattr(self, 'liste_produits'):
+            self.liste_produits.clearSelection()
+            self.liste_produits.clear()
+        self.liste_categories.clearSelection()
+        for i in reversed(range(self.disposition_cases.count())): 
+            widget = self.disposition_cases.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
+
     # Afficher un message d'erreur, le contenu du message est placé en paramètre
     def afficher_message_erreur(self, message):
         msg_box = QMessageBox()
@@ -378,8 +388,8 @@ class MainWindow(QMainWindow):
                     widget.deleteLater()
     
     # Emettre le signal qu'un produit est sélectionné vers le contrôleur
-    def produits_attribues(self, produits, case_x, case_y):
-        self.controleur.attribuer_coordonnes_produits(produits, case_x, case_y)
+    def produits_attribues(self, produits, categories, case_x, case_y):
+        self.controleur.attribuer_coordonnes_produits(produits, categories, case_x, case_y)
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):
