@@ -93,7 +93,7 @@
 ## 04/06/24
 
 ##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
-##### TELLIEZ LUC : Application A : 
+##### TELLIEZ LUC : Application A : Correction du système d'attribution d'un produit sur une case, ajout de la coloration des cases
 ##### BEIGNON Arthur : Application B : implémentation de Djikstra 
 ##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
 
@@ -102,6 +102,6 @@
 
 
 ##### COTAR Clément  :  Creation de la notice d'utilisation de l'appli A
-##### TELLIEZ LUC : 
+##### TELLIEZ LUC : Application A : Correction de divers bug, affichage du contenu des cases, ajout de commentaires
 ##### BEIGNON Arthur : Creation de la notice d'utilisation de l'appli A 
 ##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
