@@ -17,18 +17,18 @@ class modelPlan:
         if fichier_produits:
             self.lire_fichier(fichier_produits)
 
-    # Lire le fichier json
+    # Lire le fichier JSON contenant les produits
     def lire_fichier(self, json_file):
         with open(json_file, 'r') as file:
             self.produits = json.load(file)
 
-    # Ajouter un produit sur une case
+    # Ajouter un produit dans une case spécifique
     def ajt_produit(self, categorie, produit_nom, x, y):
         if categorie not in self.produit_coos:
             self.produit_coos[categorie] = {}
         self.produit_coos[categorie][produit_nom] = (x, y)
 
-    # Récupérer les coordonnées de la case du produit
+    # Récupérer les coordonnées d'une case pour un produit donné
     def get_coo_produit(self, categorie, produit_nom):
         return self.produit_coos.get(categorie, {}).get(produit_nom)
 
@@ -40,7 +40,7 @@ class modelPlan:
     def get_coos_produits(self):
         return self.produit_coos
 
-    # Sauvegarder un plan
+    # Sauvegarder le plan dans un fichier JSON
     def sauvegarder(self, fichier_sortie):
         infos = {
             "nom_projet": self.nom_projet,
@@ -58,29 +58,33 @@ class modelPlan:
         }
         with open(fichier_sortie, 'w', encoding='utf-8') as file:
             json.dump(infos, file, indent=4, ensure_ascii=False)
-    
-    # Agrandir la largeur de la grille     
+
+    # Augmenter la largeur de la grille d'une unité
     def augmenter_largeur_grille(self):
         self.largeur_grille += 1
 
-    # Diminuer la largeur de la grille  
+    # Diminuer la largeur de la grille d'une unité
     def diminuer_largeur_grille(self):
         if self.largeur_grille > 1:
             self.largeur_grille -= 1
 
-    # Agrandir la longueur de la grille  
+    # Augmenter la longueur de la grille d'une unité
     def augmenter_longueur_grille(self):
         self.longueur_grille += 1
 
-    # Diminuer la longueur de la grille  
+    # Diminuer la longueur de la grille d'une unité
     def diminuer_longueur_grille(self):
         if self.longueur_grille > 1:
             self.longueur_grille -= 1
-            
-    # Vérifier si une case contient des produits        
+
+    # Vérifier si une case spécifique contient des produits
     def case_contient_produits(self, x, y):
         for categorie in self.produit_coos:
             for coordonnees in self.produit_coos[categorie].items():
                 if coordonnees == (x, y):
                     return True
         return False
+
+    # Vérifier si le plan contient des produits
+    def contient_produits(self):
+        return bool(self.produit_coos)

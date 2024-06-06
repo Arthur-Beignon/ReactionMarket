@@ -101,19 +101,11 @@
     },
     "produit_coos": {
         "default": {
-            "Cornichons": [
-                2,
-                3
+            "Savon": [
+                5,
+                4
             ],
-            "Farine": [
-                2,
-                3
-            ],
-            "Feuilles de brick": [
-                0,
-                0
-            ],
-            "Dattes": [
+            "Avocat":[
                 0,
                 0
             ]

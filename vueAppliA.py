@@ -10,6 +10,7 @@ class image(QLabel):
     
     case_clicked = pyqtSignal(int, int)
 
+    # Constructeur de la classe image
     def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
         super().__init__()
         self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
@@ -19,6 +20,7 @@ class image(QLabel):
         self.cases_colorees = [] 
         self.dessiner_quadrillage()
 
+    # Fonction permettant de tracer le quadrillage
     def dessiner_quadrillage(self):
         if self.image.isNull():
             return
@@ -43,19 +45,7 @@ class image(QLabel):
         self.setPixmap(pixmap_with_grid)
         self.setFixedSize(pixmap_with_grid.size())
 
-    def set_taille_cases(self, largeur_cases, hauteur_cases):
-        self.largeur_case = largeur_cases
-        self.hauteur_case = hauteur_cases
-        self.dessiner_quadrillage()
-
-    def set_largeur_case(self, largeur):
-        self.largeur_case = largeur
-        self.dessiner_quadrillage()
-
-    def set_hauteur_case(self, hauteur):
-        self.hauteur_case = hauteur
-        self.dessiner_quadrillage()
-
+    # Détecter sur quelle case l'utilisateur clique
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             x = event.position().x()
@@ -68,6 +58,7 @@ class image(QLabel):
             self.window().barre_etat.showMessage(f"Clic dans la case: ({case_x}, {case_y})", 2000)
             self.case_clicked.emit(case_x, case_y)
 
+    # Colorier une case, ajoute la case à la liste des cases colorées
     def colorier_case(self, case_x, case_y):
         if (case_x, case_y) not in self.cases_colorees:
             self.cases_colorees.append((case_x, case_y))
@@ -79,6 +70,7 @@ class image(QLabel):
 class SelecteurProduit_special(QWidget):
     produits_attribues = pyqtSignal(list, int, int)
 
+    # Constructeur de la classe SelecteurProduit_special
     def __init__(self):
         super().__init__()
 
@@ -87,6 +79,7 @@ class SelecteurProduit_special(QWidget):
 
         self.mise_en_page_principale = QVBoxLayout()
 
+        # Layout supérieur avec les catégories
         self.layout_categories = QVBoxLayout()
         self.label_categorie = QLabel("Categorie")
         self.liste_categories = QListWidget()
@@ -94,6 +87,7 @@ class SelecteurProduit_special(QWidget):
         self.layout_categories.addWidget(self.label_categorie)
         self.layout_categories.addWidget(self.liste_categories)
 
+        # Layout inférieur avec les produits
         self.layout_produits = QVBoxLayout()
         self.groupe_cases = QGroupBox("Produits")
         self.disposition_cases = QVBoxLayout()
@@ -104,6 +98,7 @@ class SelecteurProduit_special(QWidget):
         self.zone_defilement.setWidget(self.groupe_cases)
         self.layout_produits.addWidget(self.zone_defilement)
 
+        # Bouton de validation
         self.bouton_attribuer = QPushButton("Placer les produits")
         self.bouton_attribuer.clicked.connect(self.attribuer_coordonnes)
 
@@ -113,6 +108,7 @@ class SelecteurProduit_special(QWidget):
 
         self.setLayout(self.mise_en_page_principale)
 
+    # Afficher les catégories et les produits du magasin sur le sélecteur
     def afficher_produits(self, item):
         categorie = item.text()
         produits = self.produits.get(categorie, [])
@@ -130,32 +126,52 @@ class SelecteurProduit_special(QWidget):
         self.disposition_cases.setSpacing(0)
         self.groupe_cases.setLayout(self.disposition_cases)
 
+    # Attribuer les coordonnées d'une case à un produit
     def attribuer_coordonnes(self):
-        produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
-        self.produits_attribues.emit(produits_selectionnes, self.case_x, self.case_y)
-        self.close()
-
+        if hasattr(self, 'liste_produits'):
+            produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
+            if produits_selectionnes:
+                self.produits_attribues.emit(produits_selectionnes, self.case_x, self.case_y)
+                self.close()
+            else:
+                self.afficher_message_erreur("Veuillez sélectionner au moins un produit")
+        else:
+            self.afficher_message_erreur("Veuillez sélectionner une catégorie et au moins un produit")
+            
+    # Charger les catégories de produits dans le sélecteur
     def charger_categories(self, categories_produits):
         self.produits = categories_produits
         self.liste_categories.clear()
         for categorie in categories_produits:
             self.liste_categories.addItem(categorie)
 
+    # Définir les coordonnées d'une case, prend une abscisse et un ordonnée en paramètre
     def definir_coordonnes_case(self, case_x, case_y):
         self.case_x = case_x
         self.case_y = case_y
+    
+    # Afficher un message d'erreur, le contenu du message est placé en paramètre
+    def afficher_message_erreur(self, message):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Icon.Warning)
+        msg_box.setWindowTitle("Erreur")
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg_box.exec()
 
 
 
 # Classe principale de l'application
 class MainWindow(QMainWindow):
+    
+    # Constructeur de l'interface principale
     def __init__(self, controleur):
         super().__init__()
         self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
         
         self.selecteur_produit = SelecteurProduit_special()
-        self.selecteur_produit.produits_attribues.connect(self.attribuer_coordonnes_produits)
+        self.selecteur_produit.produits_attribues.connect(self.produits_attribues)
         
         # Barre de menu
         menu_bar = self.menuBar()
@@ -182,6 +198,26 @@ class MainWindow(QMainWindow):
         
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
+        
+        # Options du menu édition
+        self.action_plusColonne = QAction('+1 Colonne', self)
+        self.action_plusColonne.triggered.connect(self.controleur.ajouter_colonne)
+        menu_edition.addAction(self.action_plusColonne)
+        
+        self.action_plusLigne = QAction('+1 Ligne', self)
+        self.action_plusLigne.triggered.connect(self.controleur.ajouter_ligne)
+        menu_edition.addAction(self.action_plusLigne)
+        
+        self.action_moinsColonne = QAction('-1 Colonne', self)
+        self.action_moinsColonne.triggered.connect(self.controleur.supprimer_colonne)
+        menu_edition.addAction(self.action_moinsColonne)
+        
+        self.action_moinsLigne = QAction('-1 Ligne', self)
+        self.action_moinsLigne.triggered.connect(self.controleur.supprimer_ligne)
+        menu_edition.addAction(self.action_moinsLigne)
+        
+        # Désactiver les actions d'édition initialement, quand aucun plan n'est chargé
+        self.set_actions_enabled(False)
         
         # Options du menu thème
         menu_theme.addAction('Thème clair', self.theme1)
@@ -214,7 +250,14 @@ class MainWindow(QMainWindow):
         
         #Afficher l'application en plein écran
         self.showMaximized()
-    
+
+    # Méthode pour activer ou désactiver les actions d'édition
+    def set_actions_enabled(self, enabled):
+        self.action_plusColonne.setEnabled(enabled)
+        self.action_plusLigne.setEnabled(enabled)
+        self.action_moinsColonne.setEnabled(enabled)
+        self.action_moinsLigne.setEnabled(enabled)
+
     # Changer le thème
     def theme1(self):
         qss = ""
@@ -225,17 +268,21 @@ class MainWindow(QMainWindow):
         with fichier_style :
             qss = fichier_style.read()
             self.setStyleSheet(qss)
-            
+    
+    # Afficher les indications quand le bouton aide est cliqué       
     def aide(self):
         message_aide = QMessageBox()
         message_aide.setWindowTitle("Aide")
         message_aide.setText(
-            "Bienvenue dans le créateur de plan !\n\n"
+            "Bienvenue dans le gestionnaire de plan !\n\n"
             "Voici quelques instructions pour utiliser l'application :\n\n"
-            "1. Nouveau : Créez un nouveau projet en fournissant les informations requises.\n"
+            "1. Nouveau : Créez un nouveau projet en fournissant les informations requises, "
+            "comme le nom du projet, l'auteur, le nom du magasin, l'adresse du magasin, "
+            "les dimensions de la grille, le fichier JSON des produits, et l'image du plan.\n"
             "2. Ouvrir : Ouvrez un projet existant à partir d'un fichier JSON.\n"
             "3. Enregistrer : Enregistrez le projet actuel dans un fichier JSON.\n"
-            "4. Thème : Changez le thème de l'application entre clair et sombre.\n\n"
+            "4. Ajouter/Supprimer Colonne/Ligne : Modifiez la taille du quadrillage tant qu'aucun produit n'est placé.\n"
+            "5. Thème : Changez le thème de l'application entre clair et sombre.\n\n"
             "Pour plus d'aide, veuillez consulter la documentation ou contacter le support technique."
         )
         message_aide.setIcon(QMessageBox.Icon.Information)
@@ -247,11 +294,17 @@ class MainWindow(QMainWindow):
         taille_fixe = QSize(self.central_widget.width(), self.central_widget.height())
         self.central_widget = image(chemin, taille_fixe, largeur_cases, hauteur_cases)
         self.central_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.central_widget.case_clicked.connect(self.ouvrir_selecteur_produit)  # Connecter le signal
+        self.central_widget.case_clicked.connect(self.ouvrir_selecteur_produit)
         self.setCentralWidget(self.central_widget)
 
+    # Ouvrir le sélecteur de produit quand on clique sur une case
     def ouvrir_selecteur_produit(self, case_x, case_y):
-        self.selecteur_produit.show()
+        produits = self.controleur.get_produits_case(case_x, case_y)
+        if produits:
+            self.afficher_produits_dans_case(produits, case_x, case_y)
+        else:
+            self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
+            self.selecteur_produit.show()
         
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
@@ -285,6 +338,10 @@ class MainWindow(QMainWindow):
         ajouter_ligne_btn = QPushButton("Ajouter Ligne")
         supprimer_colonne_btn = QPushButton("Supprimer Colonne")
         supprimer_ligne_btn = QPushButton("Supprimer Ligne")
+        infos_btn = QLabel("Si vous enregistrez un produit sur une case, vous ne pourrez plus modifier la taille du quadrillage")
+        font = QFont()
+        font.setItalic(True)
+        infos_btn.setFont(font)
 
         ajouter_colonne_btn.clicked.connect(self.controleur.ajouter_colonne)
         ajouter_ligne_btn.clicked.connect(self.controleur.ajouter_ligne)
@@ -295,15 +352,20 @@ class MainWindow(QMainWindow):
         layoutInfo.addRow(ajouter_ligne_btn)
         layoutInfo.addRow(supprimer_colonne_btn)
         layoutInfo.addRow(supprimer_ligne_btn)
+        layoutInfo.addRow(infos_btn)
         
         espace2 = QLabel("")
         espace2.setFixedHeight(20)
         layoutInfo.addRow(espace2)
         
         tuto = QLabel("Cliquez sur une case pour ajouter un produit")
+        tuto.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layoutInfo.addRow(tuto)
         
         self.selecteur_produit.charger_categories(modele.get_categories_produits())
+        
+        # Activer les actions d'édition maintenant que le plan est chargé
+        self.set_actions_enabled(True)
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):
@@ -314,19 +376,10 @@ class MainWindow(QMainWindow):
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
-                    
-    def ouvrir_selecteur_produit(self, case_x, case_y):
-        self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
-        self.selecteur_produit.show()
-
-    def attribuer_coordonnes_produits(self, produits, case_x, case_y):
-        for produit in produits:
-            categorie = "default"
-            self.controleur.attribuer_coordonnes_produit(categorie, produit, case_x, case_y)
-        self.central_widget.colorier_case(case_x, case_y)
-
-    def produit_selectionne(self, produit):
-        print(f"Produit sélectionné : {produit}")          
+    
+    # Emettre le signal qu'un produit est sélectionné vers le contrôleur
+    def produits_attribues(self, produits, case_x, case_y):
+        self.controleur.attribuer_coordonnes_produits(produits, case_x, case_y)
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):
@@ -402,17 +455,20 @@ class MainWindow(QMainWindow):
             
             self.fichier_produits = ""
             self.fichier_image = ""
-            
+        
+        # Boite de dialogue demandant un fichier json qui contient la liste des produits du magasin
         def ouvrir_fichier_produits(self):
             fichier, _ = QFileDialog.getOpenFileName(self, "Choisir un JSON avec les produits", "", "JSON Files (*.json);;All Files (*)")
             if fichier:
                 self.fichier_produits = fichier
         
+        # Boite de dialogue demandant un fichier image, le plan du magasin
         def ouvrir_fichier_image(self):
             fichier, _ = QFileDialog.getOpenFileName(self, "Choisir une image de plan", "", "Images Files (*.png *.jpg *.jpeg *.gif);;All Files (*)")
             if fichier:
                 self.fichier_image = fichier
         
+        # Récupérer les informations du plan
         def get_infos(self):
             return {
                 'nom_projet': self.nomProjet.text(),
@@ -424,13 +480,3 @@ class MainWindow(QMainWindow):
                 'fichier_produits': self.fichier_produits,
                 'chemin_image': self.fichier_image
             }
-            
-        def ouvrir_selecteur_produit(self, case_x, case_y):
-            self.selecteur_produit.show()
-        
-# Main
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
