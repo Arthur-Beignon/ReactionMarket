@@ -6,15 +6,18 @@ Projet de SAE IHM et Graphes
 
 Membre du projet : TELLIEZ Luc, LESAGE Mathéo, COTAR Clément & BEIGNON Arthur
 
-### Le but du projet
+## Le but du projet
 
 Le but de ce projet est de créé deux application.
 
+### Appli A
+
 La premiere l'appli A a destination des magasins a pour but de permettre la gestion du magasins.
 
+###
 La seconde l'appli B a destination des particuliers a pour but de les renseignaient en leur indiquant le chemin le plus court afin de récupérer tout les articles qu'ils auront préalablement sélectionnée.
 
-### Comment sa marche
+## Comment sa marche
 
 
 ### Appli A:
