@@ -5,7 +5,18 @@ from PyQt6.QtCore import Qt
 import json
 import heapq
 from SelecteurProduit import SelecteurProduit
+from CoordonnéesDialog import CoordonneesDialog
+from dev_algo import *
+import json
 
+# Classe dédiée à l'affichage de l'image et du quadrillage
+class Image(QLabel):
+    def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
+        super().__init__()
+        self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
+        self.setPixmap(self.image)
+        self.largeur_case = largeur_cases
+        self.hauteur_case = hauteur_cases
 
 class MainWindow(QMainWindow):
     def __init__(self, controleur_instance):
@@ -70,6 +81,11 @@ class MainWindow(QMainWindow):
         bouton_coordonnees.setFixedSize(200, 30)
         bouton_coordonnees.clicked.connect(self.demander_coordonnees_depart)
         self.dock_layout.addWidget(bouton_coordonnees)
+
+        bouton_coordonnees_caisse = QPushButton("Coordonnées de la caisse", self)
+        bouton_coordonnees_caisse.setFixedSize(200, 30)
+        bouton_coordonnees_caisse.clicked.connect(self.demander_coordonnees_caisse)
+        self.dock_layout.addWidget(bouton_coordonnees_caisse)
 
         bouton_coordonnees_caisse = QPushButton("Coordonnées de la caisse", self)
         bouton_coordonnees_caisse.setFixedSize(200, 30)
