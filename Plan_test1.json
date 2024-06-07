@@ -106,6 +106,20 @@
                 0,
                 0
             ]
+        },
+        "Viandes": {
+            "Aiguillette de poulet": [
+                5,
+                5
+            ],
+            "Côte de boeuf": [
+                5,
+                5
+            ],
+            "Steak haché": [
+                5,
+                5
+            ]
         }
     },
     "grille": {

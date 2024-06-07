@@ -111,10 +111,9 @@ class SelecteurProduit_special(QWidget):
     def afficher_produits(self, item):
         categorie = item.text()
         produits = self.produits.get(categorie, [])
-        for i in reversed(range(self.disposition_cases.count())): 
-            widget = self.disposition_cases.itemAt(i).widget()
-            if widget is not None:
-                widget.deleteLater()
+        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
+            self.disposition_cases.removeWidget(self.liste_produits)
+            self.liste_produits.deleteLater()
         self.liste_produits = QListWidget()
         self.liste_produits.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
         for produit in produits:
@@ -151,9 +150,10 @@ class SelecteurProduit_special(QWidget):
     
     # Effacer les sélections dans la liste des produits et des catégories
     def effacer_selections(self):
-        if hasattr(self, 'liste_produits'):
+        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
             self.liste_produits.clearSelection()
             self.liste_produits.clear()
+            self.liste_produits = None
         self.liste_categories.clearSelection()
         for i in reversed(range(self.disposition_cases.count())): 
             widget = self.disposition_cases.itemAt(i).widget()
@@ -201,10 +201,13 @@ class MainWindow(QMainWindow):
         action_ouvrir.triggered.connect(self.controleur.fichier_ouvrir)
         menu_fichier.addAction(action_ouvrir)
 
-        action_enregistrer = QAction('Enregistrer', self)
-        action_enregistrer.setShortcut('Ctrl+S')
-        action_enregistrer.triggered.connect(self.controleur.fichier_enregistrer)
-        menu_fichier.addAction(action_enregistrer)
+        self.action_enregistrer = QAction('Enregistrer', self)
+        self.action_enregistrer.setShortcut('Ctrl+S')
+        self.action_enregistrer.triggered.connect(self.controleur.fichier_enregistrer)
+        menu_fichier.addAction(self.action_enregistrer)
+        
+        # Désactive l'option enregistrer par defaut, quand aucun plan n'est chargé
+        self.activer_enregistrer(False)
 
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
@@ -227,7 +230,7 @@ class MainWindow(QMainWindow):
         menu_edition.addAction(self.action_moinsLigne)
 
         # Désactiver les actions d'édition initialement, quand aucun plan n'est chargé
-        self.set_actions_enabled(False)
+        self.activer_actions(False)
 
         # Options du menu thème
         menu_theme.addAction('Thème clair', self.theme1)
@@ -270,7 +273,7 @@ class MainWindow(QMainWindow):
         self.showMaximized()
 
     # Méthode pour activer ou désactiver les actions d'édition
-    def set_actions_enabled(self, enabled):
+    def activer_actions(self, enabled):
         self.action_plusColonne.setEnabled(enabled)
         self.action_plusLigne.setEnabled(enabled)
         self.action_moinsColonne.setEnabled(enabled)
@@ -318,9 +321,8 @@ class MainWindow(QMainWindow):
     # Ouvrir le sélecteur de produit quand on clique sur une case
     def ouvrir_selecteur_produit(self, case_x, case_y):
         produits = self.controleur.get_produits_case(case_x, case_y)
-        if produits:
-            self.info_produit_case(produits, case_x, case_y)
-        else:
+        self.info_produit_case(produits, case_x, case_y)
+        if not produits:
             self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
             self.selecteur_produit.show()
         
@@ -382,7 +384,7 @@ class MainWindow(QMainWindow):
         self.selecteur_produit.charger_categories(modele.get_categories_produits())
         
         # Activer les actions d'édition maintenant que le plan est chargé
-        self.set_actions_enabled(True)
+        self.activer_actions(True)
             
     # Vider le contenu du dock d'informations
     def vider_dock_informations(self):
@@ -403,23 +405,31 @@ class MainWindow(QMainWindow):
         
     # Afficher les informations des produits contenu dans une case sur le dock d'information
     def info_produit_case(self, produits, case_x, case_y):
+    # Vider le layout des produits avant d'ajouter les nouveaux éléments
         while self.produits_layout.count() > 0:
             item = self.produits_layout.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
+        
         self.produits_layout.addRow(QLabel(f"Produits dans la case ({case_x}, {case_y}):"))
         for produit in produits:
             self.produits_layout.addRow(QLabel(produit))
     
     # Effacer les informations du contenu d'une case dans le dock
-    def effacer_info_produit_case(self):
-        layoutInfo = self.dock.widget().layout()
-        while layoutInfo.count() > 0:
-            item = layoutInfo.takeAt(0)
-            widget = item.widget()
+    def effacer_selections(self):
+        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
+            self.liste_produits.clearSelection()
+            self.liste_produits.clear()
+        self.liste_categories.clearSelection()
+        for i in reversed(range(self.disposition_cases.count())):
+            widget = self.disposition_cases.itemAt(i).widget()
             if widget is not None:
                 widget.deleteLater()
+    
+    # Méthode pour activer ou désactiver l'action "Enregistrer"
+    def activer_enregistrer(self, enabled):
+        self.action_enregistrer.setEnabled(enabled)
         
     # Interface s'affichant lors de la création d'un nouveau fichier
     class nv_fichier(QDialog):
