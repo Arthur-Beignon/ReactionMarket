@@ -105,3 +105,11 @@
 ##### TELLIEZ LUC : Application A : Correction de divers bug, affichage du contenu des cases, ajout de commentaires
 ##### BEIGNON Arthur : Creation de la notice d'utilisation de l'appli A 
 ##### LESAGE Mathéo :  Creation de la notice d'utilisation de l'appli A
+
+## 07/06/24
+
+
+##### COTAR Clément  :  
+##### TELLIEZ LUC : Application A : Correction des derniers bugs, changements ergonomiques, modification de la notice, création d'un plan type
+##### BEIGNON Arthur : 
+##### LESAGE Mathéo :  
