@@ -1,0 +1,81 @@
+{"Légumes": [
+    "Avocat",
+    "Courgette",
+    "Topinambour"
+],
+"Poissons": [
+    "Cabillaud",
+    "Colin",
+    "Coquille St-Jacques"
+],
+"Viandes": [
+    "Aiguillette de poulet",
+    "Côte de boeuf",
+    "Steak haché"
+],
+"Épicerie": [
+    "Cornichons",
+    "Farine",
+    "Sel"
+],
+"Épicerie sucrée": [
+    "Cassonade",
+    "Citron confits",
+    "Dattes"
+],
+"Petit déjeuner": [
+    "Barres chocolatées",
+    "Biscottes",
+    "Brioche"
+],
+"Fruits": [
+    "Abricots",
+    "Ananas",
+    "Bananes"
+],
+"Rayon frais": [
+    "Croque monsieur",
+    "Crudités",
+    "Feuilles de brick"
+],
+"Crèmerie": [
+    "Beurre",
+    "Boisson lactée",
+    "Crème dessert"
+],
+"Conserves": [
+    "Sauce tomate",
+    "Soupes",
+    "Thon"
+],
+"Apéritifs": [
+    "Tarama",
+    "Tuiles salées",
+    "Tzatziki"
+],
+"Boissons": [
+    "Sirop",
+    "Soda",
+    "Vin"
+],
+"Articles Maison": [
+    "Savon",
+    "Sel machine",
+    "Serviettes papier"
+],
+"Hygiène": [
+    "Rasoirs",
+    "Savon main",
+    "Shampooing"
+],
+"Bureau": [
+    "Taille-crayon",
+    "Timbres",
+    "Trombones"
+],
+"Animaux": [
+    "Graines",
+    "Litière",
+    "Pâtées"
+]
+}
