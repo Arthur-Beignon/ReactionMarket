@@ -9,15 +9,6 @@ from CoordonnéesDialog import CoordonneesDialog
 from dev_algo import *
 import json
 
-# Classe dédiée à l'affichage de l'image et du quadrillage
-class Image(QLabel):
-    def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
-        super().__init__()
-        self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
-        self.setPixmap(self.image)
-        self.largeur_case = largeur_cases
-        self.hauteur_case = hauteur_cases
-
 class MainWindow(QMainWindow):
     def __init__(self, controleur_instance):
         super().__init__()
