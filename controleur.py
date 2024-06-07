@@ -60,7 +60,7 @@ class controleur:
             for categorie in self.model.produit_coos:
                 for _, (x, y) in self.model.produit_coos[categorie].items():
                     self.vue.central_widget.colorier_case(x, y)
-            self.vue.activer_enregistrer(True)
+        self.vue.activer_enregistrer(True)
 
     # Enregister un plan au format json
     def fichier_enregistrer(self):
@@ -130,15 +130,13 @@ class controleur:
         for produit, categorie in zip(produits, categories):
             self.model.ajt_produit(categorie, produit, case_x, case_y)
             self.vue.central_widget.colorier_case(case_x, case_y)
-        produits_dans_case = self.get_produits_case(case_x, case_y)
-        self.vue.info_produit_case(produits_dans_case, case_x, case_y)
 
     # Récupére les produits dans une case
     def get_produits_case(self, case_x, case_y):
         produits_dans_case = []
         for categorie, produits in self.model.produit_coos.items():
             for produit, coords in produits.items():
-                if coords == [case_x, case_y]:
+                if coords == [case_x, case_y]:  # Notez que coords est une liste dans votre JSON
                     produits_dans_case.append(f"{categorie}: {produit}")
         return produits_dans_case
     

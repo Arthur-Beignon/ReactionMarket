@@ -69,10 +69,9 @@ class image(QLabel):
 class SelecteurProduit_special(QWidget):
     produits_attribues = pyqtSignal(list, list, int, int)
 
-    # Constructeur de la classe SelecteurProduit_special
-    def __init__(self):
+    def __init__(self, produit_coos):
         super().__init__()
-
+        self.produit_coos = produit_coos
         self.setWindowTitle("Sélecteur de Produit")
         self.resize(400, 600)
 
@@ -97,23 +96,27 @@ class SelecteurProduit_special(QWidget):
         self.zone_defilement.setWidget(self.groupe_cases)
         self.layout_produits.addWidget(self.zone_defilement)
 
-        # Bouton de validation
+        # Boutons de validation et de suppression
         self.bouton_attribuer = QPushButton("Placer les produits")
         self.bouton_attribuer.clicked.connect(self.attribuer_coordonnes)
+
+        self.bouton_supprimer = QPushButton("Supprimer le produit")
+        self.bouton_supprimer.clicked.connect(self.supprimer_produit)
 
         self.mise_en_page_principale.addLayout(self.layout_categories)
         self.mise_en_page_principale.addLayout(self.layout_produits)
         self.mise_en_page_principale.addWidget(self.bouton_attribuer)
+        self.mise_en_page_principale.addWidget(self.bouton_supprimer)
 
         self.setLayout(self.mise_en_page_principale)
 
-    # Afficher les catégories et les produits du magasin sur le sélecteur
     def afficher_produits(self, item):
         categorie = item.text()
         produits = self.produits.get(categorie, [])
-        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
-            self.disposition_cases.removeWidget(self.liste_produits)
-            self.liste_produits.deleteLater()
+        for i in reversed(range(self.disposition_cases.count())): 
+            widget = self.disposition_cases.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
         self.liste_produits = QListWidget()
         self.liste_produits.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
         for produit in produits:
@@ -124,7 +127,6 @@ class SelecteurProduit_special(QWidget):
         self.disposition_cases.setSpacing(0)
         self.groupe_cases.setLayout(self.disposition_cases)
 
-    # Attribuer les coordonnées d'une case à un produit
     def attribuer_coordonnes(self):
         produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
         if produits_selectionnes:
@@ -134,33 +136,46 @@ class SelecteurProduit_special(QWidget):
             self.close()
         else:
             self.afficher_message_erreur("Veuillez sélectionner au moins un produit avant de placer.")
-            
-    # Charger les catégories de produits dans le sélecteur
+
+    def supprimer_produit(self):
+        produits_selectionnes = [item.text() for item in self.liste_produits.selectedItems()]
+        if produits_selectionnes:
+            for produit in produits_selectionnes:
+                for categorie in self.produit_coos:
+                    if produit in self.produit_coos[categorie]:
+                        del self.produit_coos[categorie][produit]
+                        if not self.produit_coos[categorie]:
+                            del self.produit_coos[categorie]
+                        break
+            self.afficher_produits(self.liste_categories.currentItem())
+        else:
+            self.afficher_message_erreur("Veuillez sélectionner un produit à supprimer.")
+
     def charger_categories(self, categories_produits):
         self.produits = categories_produits
         self.liste_categories.clear()
         for categorie in categories_produits:
             self.liste_categories.addItem(categorie)
 
-    # Définir les coordonnées d'une case, prend une abscisse et une ordonnée en paramètre
     def definir_coordonnes_case(self, case_x, case_y):
         self.case_x = case_x
         self.case_y = case_y
         self.effacer_selections()
-    
-    # Effacer les sélections dans la liste des produits et des catégories
+
     def effacer_selections(self):
-        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
-            self.liste_produits.clearSelection()
-            self.liste_produits.clear()
-            self.liste_produits = None
-        self.liste_categories.clearSelection()
-        for i in reversed(range(self.disposition_cases.count())): 
+        if hasattr(self, 'liste_produits'):
+            if self.liste_produits:
+                self.liste_produits.clearSelection()
+                self.liste_produits.clear()
+                self.liste_produits = None
+        if hasattr(self, 'liste_categories'):
+            if self.liste_categories:
+                self.liste_categories.clearSelection()
+        for i in reversed(range(self.disposition_cases.count())):
             widget = self.disposition_cases.itemAt(i).widget()
             if widget is not None:
                 widget.deleteLater()
 
-    # Afficher un message d'erreur, le contenu du message est placé en paramètre
     def afficher_message_erreur(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Icon.Warning)
@@ -180,7 +195,7 @@ class MainWindow(QMainWindow):
         self.controleur = controleur
         self.setWindowTitle("Gestionnaire de plan")
 
-        self.selecteur_produit = SelecteurProduit_special()
+        self.selecteur_produit = SelecteurProduit_special(controleur.model.produit_coos)
         self.selecteur_produit.produits_attribues.connect(self.produits_attribues)
 
         # Barre de menu
@@ -320,11 +335,11 @@ class MainWindow(QMainWindow):
 
     # Ouvrir le sélecteur de produit quand on clique sur une case
     def ouvrir_selecteur_produit(self, case_x, case_y):
+        self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
+        self.selecteur_produit.show()
         produits = self.controleur.get_produits_case(case_x, case_y)
-        self.info_produit_case(produits, case_x, case_y)
-        if not produits:
-            self.selecteur_produit.definir_coordonnes_case(case_x, case_y)
-            self.selecteur_produit.show()
+        if produits:
+            self.info_produit_case(produits, case_x, case_y)
         
     # Mettre à jour la vue avec les informations du plan
     def afficher_informations_plan(self, modele):
@@ -405,25 +420,21 @@ class MainWindow(QMainWindow):
         
     # Afficher les informations des produits contenu dans une case sur le dock d'information
     def info_produit_case(self, produits, case_x, case_y):
-    # Vider le layout des produits avant d'ajouter les nouveaux éléments
         while self.produits_layout.count() > 0:
             item = self.produits_layout.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
-        
         self.produits_layout.addRow(QLabel(f"Produits dans la case ({case_x}, {case_y}):"))
         for produit in produits:
             self.produits_layout.addRow(QLabel(produit))
     
     # Effacer les informations du contenu d'une case dans le dock
-    def effacer_selections(self):
-        if hasattr(self, 'liste_produits') and self.liste_produits is not None:
-            self.liste_produits.clearSelection()
-            self.liste_produits.clear()
-        self.liste_categories.clearSelection()
-        for i in reversed(range(self.disposition_cases.count())):
-            widget = self.disposition_cases.itemAt(i).widget()
+    def effacer_info_produit_case(self):
+        layoutInfo = self.dock.widget().layout()
+        while layoutInfo.count() > 0:
+            item = layoutInfo.takeAt(0)
+            widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
     

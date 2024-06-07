@@ -80,7 +80,7 @@ class modelPlan:
     # Vérifier si une case spécifique contient des produits
     def case_contient_produits(self, x, y):
         for categorie in self.produit_coos:
-            for produit, coordonnees in self.produit_coos[categorie].items():
+            for coordonnees in self.produit_coos[categorie].items():
                 if coordonnees == (x, y):
                     return True
         return False
