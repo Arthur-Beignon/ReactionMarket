@@ -95,3 +95,5 @@ class modelPlan:
     def diminuer_longueur_grille(self):
         if self.longueur_grille > 1:
             self.longueur_grille -= 1
+
+            

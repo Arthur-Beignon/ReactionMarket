@@ -1,36 +1,26 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMessageBox, QMainWindow, QDockWidget, QWidget, QLabel, QFileDialog, QDialog, QVBoxLayout, QLineEdit, QHBoxLayout, QPushButton, QSpinBox, QGridLayout, QFormLayout, QStatusBar, QListWidget, QCheckBox, QGroupBox, QScrollArea
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QFont, QPixmap, QIcon, QAction
-from SelecteurProduit import SelecteurProduit
-from CoordonnéesDialog import CoordonneesDialog
-from dev_algo import *
+from PyQt6.QtWidgets import QApplication, QDialog, QLineEdit, QFileDialog, QDockWidget, QInputDialog, QMessageBox, QVBoxLayout, QSpinBox, QHBoxLayout, QPushButton, QLabel, QMainWindow, QWidget, QGridLayout, QStatusBar, QListWidget
+from PyQt6.QtGui import QIcon, QPixmap, QFont, QAction, QPainter, QPen
+from PyQt6.QtCore import Qt
 import json
+import heapq
+from SelecteurProduit import SelecteurProduit
 
-# Classe dédiée à l'affichage de l'image et du quadrillage
-class Image(QLabel):
-    def __init__(self, chemin: str, taille: QSize, largeur_cases=50, hauteur_cases=50):
-        super().__init__()
-        self.image = QPixmap(chemin).scaled(taille, Qt.AspectRatioMode.KeepAspectRatio)
-        self.setPixmap(self.image)
-        self.largeur_case = largeur_cases
-        self.hauteur_case = hauteur_cases
 
 class MainWindow(QMainWindow):
     def __init__(self, controleur_instance):
         super().__init__()
-        self.setWindowTitle("Gestionnaire de plan")
+        self.setWindowTitle("ReactionMarket : Gagne du temps !")
         self.controleur = controleur_instance
         self.setWindowIcon(QIcon('image/logo.png'))
 
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu('&Fichier')
-        menu_edition = menu_bar.addMenu('&Edition')
+        menu_outils = menu_bar.addMenu('&Outils')
         menu_theme = menu_bar.addMenu('&Thème')
         menu_aide = menu_bar.addMenu('&Aide')
 
         menu_fichier.addAction('Ouvrir', self.fichier_ouvrir)
-        menu_fichier.addAction('Enregistrer', self.fichier_enregistrer)
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.close)
 
@@ -41,40 +31,75 @@ class MainWindow(QMainWindow):
         action_aide.triggered.connect(self.aide)
         menu_aide.addAction(action_aide)
 
-        self.dock = QDockWidget('Informations')
+        self.dock = QDockWidget()
+        self.dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
+        self.dock.setFeatures(QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
         dock_widget = QWidget()
+        self.dock_layout = QVBoxLayout()
+        dock_widget.setLayout(self.dock_layout)
         self.dock.setWidget(dock_widget)
-        dock_layout = QFormLayout(dock_widget)
-        dock_widget.setLayout(dock_layout)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock)
-        self.dock.setMinimumSize(200, 120)
+        self.dock.setFixedSize(300, self.height())
 
         self.selecteur_produit = SelecteurProduit()
-        self.dock.setWidget(self.selecteur_produit)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
+        self.dock_layout.addWidget(self.selecteur_produit)
 
         self.central_widget = QLabel('Importer un plan', alignment=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignHCenter)
+        self.central_widget.setScaledContents(True)  # Permet le redimensionnement automatique
         self.setCentralWidget(self.central_widget)
         font = QFont()
         font.setPointSize(40)
         self.central_widget.setFont(font)
 
         coord_action = QAction("Coordonnées de départ", self)
-        coord_action.triggered.connect(self.open_coord_dialog)
-        menu_edition.addAction(coord_action)
+        coord_action.triggered.connect(self.demander_coordonnees_depart)
+        menu_outils.addAction(coord_action)
+
+        coord_caisse = QAction("Coordonnées de la caisse", self)
+        coord_caisse.triggered.connect(self.demander_coordonnees_caisse)
+        menu_outils.addAction(coord_caisse)
 
         algo_action = QAction("Utiliser l'algorithme de Dijkstra", self)
         algo_action.triggered.connect(self.dijkstra_dialog)
-        menu_edition.addAction(algo_action)
+        menu_outils.addAction(algo_action)
 
         self.barre_etat = QStatusBar()
         self.setStatusBar(self.barre_etat)
 
         bouton_coordonnees = QPushButton("Coordonnées de départ", self)
+        bouton_coordonnees.setFixedSize(200, 30)
         bouton_coordonnees.clicked.connect(self.demander_coordonnees_depart)
-        dock_layout.addWidget(bouton_coordonnees)
+        self.dock_layout.addWidget(bouton_coordonnees)
 
-        self.coordonnees_depart = (0, 0)
+        bouton_coordonnees_caisse = QPushButton("Coordonnées de la caisse", self)
+        bouton_coordonnees_caisse.setFixedSize(200, 30)
+        bouton_coordonnees_caisse.clicked.connect(self.demander_coordonnees_caisse)
+        self.dock_layout.addWidget(bouton_coordonnees_caisse)
+
+        # Charger les données depuis le fichier JSON
+        with open("jsonType.json", "r") as f:
+            data = json.load(f)
+
+        # Extraire les coordonnées des produits
+        produit_coos = data["produit_coos"]
+
+        # Initialiser le dictionnaire de coordonnées des produits
+        self.coordonnees_produits = {}
+
+        # Parcourir les catégories de produits
+        for categorie, produits in produit_coos.items():
+            # Parcourir les produits dans chaque catégorie
+            for produit, coordonnees in produits.items():
+                # Ajouter les coordonnées du produit au dictionnaire
+                self.coordonnees_produits[produit] = coordonnees
+
+        bouton_envoie = QPushButton("OK", self)
+        bouton_envoie.setFixedSize(200, 30)
+        bouton_envoie.clicked.connect(self.envoyerchemin)
+        self.dock_layout.addWidget(bouton_envoie)
+
+        self.coordonnees_depart = [0, 0]
+        self.coordonnees_caisse = [0, 0]
 
         self.label_largeur_grille = QLabel()
         self.label_longueur_grille = QLabel()
@@ -82,24 +107,25 @@ class MainWindow(QMainWindow):
         self.showMaximized()
 
     def fichier_ouvrir(self):
-        self.vider_dock_informations()
         fichier, _ = QFileDialog.getOpenFileName(self, "Choisir un fichier JSON", "", "JSON Files (*.json);;All Files (*)")
         if fichier:
             with open(fichier, 'r') as f:
                 data = json.load(f)
                 self.mise_a_jour_vue(data)
+                self.__grille=data.get("grille","")
+                self.__grille_largeur=self.__grille.get("largeur", "")
+                self.__grille_longueur=self.__grille.get("longueur", "")
                 self.selecteur_produit.charger_donnees_depuis_fichier(fichier)
 
-    def fichier_enregistrer(self):
-        fichier, _ = QFileDialog.getSaveFileName(self, "Enregistrer le fichier JSON", "", "JSON Files (*.json);;All Files (*)")
-        if fichier:
-            self.controleur.enregistrer_plan(fichier)
-
-    def open_coord_dialog(self):
-        dialog = CoordonneesDialog()
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            self.coordonnees_depart = dialog.get_coordonnees()
-            QMessageBox.information(self, "Coordonnées de départ", f"Coordonnées saisies : {self.coordonnees_depart}")
+    def demander_coordonnees_caisse(self):
+        coord, ok = QInputDialog.getText(self, "Coordonnées de la caisse", "Entrez les coordonnées de la caisse (x, y):")
+        if ok:
+            try:
+                x, y = map(int, coord.split(','))
+                self.coordonnees_caisse = (x, y)
+                QMessageBox.information(self, "Coordonnées de la caisse", f"Coordonnées de la caisse : {self.coordonnees_caisse}")
+            except ValueError:
+                QMessageBox.warning(self, "Erreur", "Coordonnées invalides, veuillez entrer des valeurs numériques séparées par une virgule.")
 
     def mise_a_jour_vue(self, data):
         chemin_image = data.get("chemin_image", "")
@@ -107,12 +133,8 @@ class MainWindow(QMainWindow):
             self.afficher_image_central_widget(chemin_image)
 
     def afficher_image_central_widget(self, chemin_image):
-        largeur_image = self.central_widget.width()
-        hauteur_image = self.central_widget.height()
-        largeur_cases = largeur_image // 10  # Placeholder values
-        hauteur_cases = hauteur_image // 10  # Placeholder values
-        image_label = Image(chemin_image, QSize(largeur_image, hauteur_image), largeur_cases, hauteur_cases)
-        self.setCentralWidget(image_label)
+        self.__pixmap = QPixmap(chemin_image)
+        self.central_widget.setPixmap(self.__pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio))  # Redimensionnement pour occuper tout l'espace disponible
 
     def theme1(self):
         qss = ""
@@ -124,15 +146,6 @@ class MainWindow(QMainWindow):
             qss = fichier_style.read()
             self.setStyleSheet(qss)
 
-    def vider_dock_informations(self):
-        layout_info_vide = self.dock.widget().layout()
-        if layout_info_vide is not None:
-            while layout_info_vide.count() > 0:
-                item = layout_info_vide.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-
     def aide(self):
         message_aide = QMessageBox()
         message_aide.setWindowTitle("Aide")
@@ -141,188 +154,102 @@ class MainWindow(QMainWindow):
             "Voici quelques instructions pour utiliser l'application :\n\n"
             "1. Nouveau : Créez un nouveau projet en fournissant les informations requises.\n"
             "2. Ouvrir : Ouvrez un projet existant à partir d'un fichier JSON.\n"
-            "3. Enregistrer : Enregistrez le projet actuel dans un fichier JSON.\n"
-            "4. Thème : Changez le thème de l'application entre clair et sombre.\n\n"
-            "Pour plus d'aide, veuillez consulter la documentation ou contacter le support technique."
-        )
+            "3. Thème : Changez le thème de l'application entre clair et sombre.\n\n"
+            "Pour plus d'aide, veuillez consulter la documentation ou contacter le support technique")
         message_aide.setIcon(QMessageBox.Icon.Information)
         message_aide.setStandardButtons(QMessageBox.StandardButton.Ok)
         message_aide.exec()
 
     def demander_coordonnees_depart(self):
-        dialog = CoordonneesDialog()
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            self.coordonnees_depart = dialog.get_coordonnees()
-            QMessageBox.information(self, "Coordonnées de départ", f"Coordonnées de départ : {self.coordonnees_depart}")
+        coord, ok = QInputDialog.getText(self, "Coordonnées de départ", "Entrez les coordonnées de départ (x, y):")
+        if ok:
+            try:
+                x, y = map(int, coord.split(','))
+                self.coordonnees_depart = [x, y]
+                QMessageBox.information(self, "Coordonnées de départ", f"Coordonnées de départ : {self.coordonnees_depart}")
+            except ValueError:
+                QMessageBox.warning(self, "Erreur", "Coordonnées invalides, veuillez entrer des valeurs numériques séparées par une virgule.")
 
     def dijkstra_dialog(self):
         reply = QMessageBox.question(self, 'Utiliser l\'algorithme de Dijkstra',
                                      "Voulez-vous utiliser l'algorithme de Dijkstra pour déterminer le chemin le plus court ?",
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
-            # Appeler la fonction pour utiliser l'algorithme de Dijkstra ici
-            self.utiliser_djiskstra()
+            self.dijsktra()
         else:
             print("Algorithme de Dijkstra désactivé")
 
-    def utiliser_djiskstra(self):
-        graphe = self.construire_graphe_depuis_donnees()
-        coord_depart = self.coordonnees_depart
-        dict_produits_avec_coos = self.selecteur_produit.creer_dictionnaire_produits_avec_coos()
+    def envoyerchemin(self):
+        coordonnees_produits = self.selecteur_produit.creer_dictionnaire_produits_avec_coos()
+        liste = [self.coordonnees_depart]  # Ajouter les coordonnées de départ
+        for produit in coordonnees_produits.keys():
+            if produit in self.coordonnees_produits:
+                liste.append(self.coordonnees_produits[produit])
+        liste.append(self.coordonnees_caisse)  # Ajouter les coordonnées de la caisse
 
-        coords_produits_selectionnes = list(dict_produits_avec_coos.values())
+        self.trace_ligne(liste)
 
-        chemins, distances = dijkstra(graphe, coord_depart, coords_produits_selectionnes)
-        self.afficher_chemins(chemins, distances)
+    def trace_ligne(self, points):
+        if self.__pixmap:
+            pixmap = self.__pixmap.copy()
+            painter = QPainter(pixmap)
+            pen = QPen(Qt.GlobalColor.black, 3)
+            painter.setPen(pen)
+            height=pixmap.size().height()
+            width=pixmap.size().width()
 
-    def construire_graphe_depuis_donnees(self):
-            data = self.charger_donnees_graphe('graphe_donnees.json')
+            for i in range(len(points) - 1):
+                start_point = points[i]
+                end_point = points[i + 1] 
+                start_point = (start_point[0] * int(width/int(self.__grille_largeur))+ int(width/int((self.__grille_largeur/2))), start_point[1] * int(height/int(self.__grille_longueur)) + int(height/int((self.__grille_longueur/2))))
+                end_point = (end_point[0] * int(width/int(self.__grille_largeur)) + int(width/int((self.__grille_largeur/2))), end_point[1] * int(height/int(self.__grille_longueur)) + int(height/int((self.__grille_longueur/2))))
+                painter.drawLine(start_point[0], start_point[1], end_point[0], end_point[1])
+                print(start_point)
+                print(end_point)
 
-            graphe = {}
+            painter.end()
+            self.central_widget.setPixmap(pixmap)
 
-            # Initialiser les noeuds dans le graphe
-            for noeud in data["noeuds"]:
-                graphe[noeud] = []
+    def parcours(dico_graphe: dict, depart: tuple, arrivee: tuple) -> list:
+        '''La fonction explore le labyrinthe à partir de son graphe associé et renvoie une liste des
+        chemins possibles entre depart et arrivee.'''
 
-            # Ajouter les arêtes avec les poids dans le graphe
-            for arete in data["aretes"]:
-                de = arete["de"]
-                vers = arete["vers"]
-                poids = arete["poids"]
-                graphe[de].append((vers, poids))
-                graphe[vers].append((de, poids))  # Si le graphe est non dirigé
+        # Initialisation de la liste des noeuds et des chemins
+        liste_noeuds = [depart]
+        liste_chemins = [[depart]]
 
-            return graphe
-        
+        # Liste du chemin entre le depart et l'arrivée
+        chemins = []
 
-    def afficher_chemins(self, chemins, distances):
-        # Méthode pour afficher ou traiter les chemins et les distances
-        print("Chemins:", chemins)
-        print("Distances:", distances)
-    
+        plus_court_chemin = None
 
+        while liste_noeuds:
 
-    class NvFichier(QDialog):
-        def __init__(self):
-            super().__init__()
+            # On supprime le noeud et le chemin où nous nous trouvons 
+            noeud_actuel = liste_noeuds.pop()
+            chemin = liste_chemins.pop()
 
-            self.setWindowTitle("Nouveau fichier")
-            self.setFixedSize(500, 300)
-            
-            intitule_nom_projet = QLabel("Nom du fichier : ")
-            self.nom_projet = QLineEdit()
-            intitule_auteur = QLabel("Nom de l'auteur : ")
-            self.nom_auteur = QLineEdit()
-            intitule_nom_magasin = QLabel("Nom du magasin : ")
-            self.nom_magasin = QLineEdit()
-            intitule_adresse_magasin = QLabel("Adresse du magasin : ")
-            self.adresse_magasin = QLineEdit()
-            intitule_largeur_grille = QLabel("Largeur de la grille : ")
-            self.largeur_grille = QSpinBox()
-            self.largeur_grille.setRange(1, 1000)
-            intitule_longueur_grille = QLabel("Longueur de la grille : ")
-            self.longueur_grille = QSpinBox()
-            self.longueur_grille.setRange(1, 1000)
-            intitule_produits = QLabel("Fichier JSON des produits : ")
-            self.importer_produits = QPushButton('Importer')
-            intitule_image = QLabel("Image du plan : ")
-            self.importer_image = QPushButton('Importer')
-            
-            self.importer_produits.clicked.connect(self.ouvrir_fichier_produits)
-            self.importer_image.clicked.connect(self.ouvrir_fichier_image)
-            
-            layout_principal = QGridLayout()
+            # Si on se trouve à l'arrivée on l'ajoute au chemin 
+            if noeud_actuel == arrivee:
+                # Si le chemin est le plus court ou le premier trouver
+                if plus_court_chemin is None or len(chemin) < len(plus_court_chemin):
+                    plus_court_chemin = chemin
 
-            layout_principal.addWidget(intitule_nom_projet, 0, 0)
-            layout_principal.addWidget(self.nom_projet, 0, 1)
-            layout_principal.addWidget(intitule_auteur, 1, 0)
-            layout_principal.addWidget(self.nom_auteur, 1, 1)
-            layout_principal.addWidget(intitule_nom_magasin, 2, 0)
-            layout_principal.addWidget(self.nom_magasin, 2, 1)
-            layout_principal.addWidget(intitule_adresse_magasin, 3, 0)
-            layout_principal.addWidget(self.adresse_magasin, 3, 1)
-            layout_principal.addWidget(intitule_largeur_grille, 4, 0)
-            layout_principal.addWidget(self.largeur_grille, 4, 1)
-            layout_principal.addWidget(intitule_longueur_grille, 5, 0)
-            layout_principal.addWidget(self.longueur_grille, 5, 1)
-            layout_principal.addWidget(intitule_produits, 6, 0)
-            layout_principal.addWidget(self.importer_produits, 6, 1)
-            layout_principal.addWidget(intitule_image, 7, 0)
-            layout_principal.addWidget(self.importer_image, 7, 1)
+            else:
+                for voisin in dico_graphe[noeud_actuel]:
+                    if voisin not in chemin:
+                        liste_noeuds.append(voisin)
+                        liste_chemins.append(chemin + [voisin])
 
-            # Ajout du bouton envoyer
-            envoyer = QPushButton("Envoyer")
-            envoyer.setFixedSize(70, 30)
-            envoyer.clicked.connect(self.envoyer_infos)
-            layout_principal.addWidget(envoyer, 8, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
-            
-            validation = QPushButton("Valider")
-            validation.setFixedSize(70, 30)
-            validation.clicked.connect(self.accept)
-            
-            validation_layout = QHBoxLayout()
-            validation_layout.addStretch(1)
-            validation_layout.addWidget(validation)
+        if plus_court_chemin:
+            chemins.append(plus_court_chemin)
 
-            layout_complet = QVBoxLayout()
-            layout_complet.addLayout(layout_principal)
-            layout_complet.addStretch(1)
-            layout_complet.addLayout(validation_layout)
-            
-            self.setLayout(layout_complet)
-            
-            self.fichier_produits = ""
-            self.fichier_image = ""
-            
-        def ouvrir_fichier_produits(self):
-            fichier, _ = QFileDialog.getOpenFileName(self, "Choisir un JSON avec les produits", "", "JSON Files (*.json);;All Files (*)")
-            if fichier:
-                self.fichier_produits = fichier
-        
-        def ouvrir_fichier_image(self):
-            fichier, _ = QFileDialog.getOpenFileName(self, "Choisir une image de plan", "", "Images Files (*.png *.jpg *.jpeg *.gif);;All Files (*)")
-            if fichier:
-                self.fichier_image = fichier
-
-        def envoyer_infos(self):
-            infos = self.get_infos()
-            # Ajoutez ici la logique pour envoyer les infos où vous le souhaitez
-            print("Informations envoyées :", infos)
-        
-        def get_infos(self):
-            return {
-                'nom_projet': self.nom_projet.text(),
-                'auteur': self.nom_auteur.text(),
-                'nom_magasin': self.nom_magasin.text(),
-                'adresse_magasin': self.adresse_magasin.text(),
-                'largeur_grille': self.largeur_grille.value(),
-                'longueur_grille': self.longueur_grille.value(),
-                'fichier_produits': self.fichier_produits,
-                'chemin_image': self.fichier_image
-            }
+        return chemins
 
 
-class ListeProduitsWindow(QDialog):
-    def __init__(self, liste_produits):
-        super().__init__()
-        self.setWindowTitle("Liste des Produits à Récupérer")
-        layout = QVBoxLayout()
-        self.liste_widget = QListWidget()
-        
-        # Extraire les noms des produits à partir des tuples
-        noms_produits = [produit for produit, _ in liste_produits]
-        
-        self.liste_widget.addItems(noms_produits)
-        layout.addWidget(self.liste_widget)
-        bouton_fermer = QPushButton("Fermer")
-        bouton_fermer.clicked.connect(self.close)
-        layout.addWidget(bouton_fermer)
-        self.setLayout(layout)
-# Main
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MainWindow(None)  # Remplacez `None` par l'instance de votre contrôleur
-    window.show()
+    controleur = None  # Passez une instance de votre contrôleur ici
+    main_window = MainWindow(controleur)
+    main_window.show()
     sys.exit(app.exec())
-
-

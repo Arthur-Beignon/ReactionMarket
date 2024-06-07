@@ -39,14 +39,12 @@ class SelecteurProduit(QWidget):
         layout_produits_selectionnes.addWidget(self.liste_produits_selectionnes)
 
         # Bouton Envoyer
-        bouton_envoyer = QPushButton("Envoyer")
-        bouton_envoyer.clicked.connect(self.afficher_produits_selectionnes)
+        
 
         # Ajouter les layouts au layout principal
         mise_en_page_principale.addLayout(layout_categories)
         mise_en_page_principale.addLayout(layout_produits)
         mise_en_page_principale.addLayout(layout_produits_selectionnes)
-        mise_en_page_principale.addWidget(bouton_envoyer)
 
         self.setLayout(mise_en_page_principale)
         
@@ -130,7 +128,8 @@ class SelecteurProduit(QWidget):
         message = json.dumps(dict_produits_avec_coos, indent=4, ensure_ascii=False)
         msg_box = QMessageBox()
         msg_box.setText(message)
-        msg_box.exec_()
+        msg_box.exec()
+        
 
     @staticmethod
     def charger_donnees_depuis_fichier(nom_fichier):

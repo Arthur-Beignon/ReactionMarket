@@ -168,6 +168,14 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
         for ligne in range(self.__hauteur) :
             self.__cases[ligne][0].detruireMur('W')
             self.__cases[ligne][self.__largeur - 1].detruireMur('E')
+
+    def detruirelaby(self) -> None:
+        '''Méthode publique, enlève une bordure extérieure de la grille.'''
+        for colonne in range(self.__largeur) :
+            self.__cases[0][colonne].detruireMur('N')
+            self.__cases[self.__hauteur - 1][colonne].detruireMur('S')
+            self.__cases[colonne][0].detruireMur('W')
+            self.__cases[colonne][self.__largeur - 1].detruireMur('E')
     
     
     def afficheGrilleVide(self) -> None:
@@ -279,4 +287,13 @@ if __name__ == '__main__' :
     
     print("\nConstruction avec un graphe :")
     laby.construireAvecGraphe(graphe)
+    print(laby)
+
+    laby = Grille(8,8)
+    print(laby)
+
+    laby.detruirelaby()
+    print(laby)
+
+    laby.construireBordure
     print(laby)
