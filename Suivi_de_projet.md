@@ -112,4 +112,4 @@
 ##### COTAR Clément  :  
 ##### TELLIEZ LUC : Application A : Correction des derniers bugs, changements ergonomiques, modification de la notice, création d'un plan type
 ##### BEIGNON Arthur : 
-##### LESAGE Mathéo :  
+##### LESAGE Mathéo :  Mise en place de l'affichage du chemin pour l'appli B
